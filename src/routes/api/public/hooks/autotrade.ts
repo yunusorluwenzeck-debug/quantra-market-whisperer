@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { runAllBots } from "@/lib/bot.server";
 import { generateTopPickReports } from "@/lib/ai.server";
+import { runOpportunityEmails } from "@/lib/notify.server";
 import { claimJob, hasBearer } from "@/lib/jobs.server";
 
 export const Route = createFileRoute("/api/public/hooks/autotrade")({
@@ -15,7 +16,8 @@ export const Route = createFileRoute("/api/public/hooks/autotrade")({
         if (key && (await claimJob("ai-reports", 6 * 3600_000))) {
           reports = await generateTopPickReports(key).catch((e) => { console.error(e); return 0; });
         }
-        return Response.json({ bots, reports });
+        const emails = await runOpportunityEmails().catch((e) => { console.error(e); return null; });
+        return Response.json({ bots, reports, emails });
       },
     },
   },
