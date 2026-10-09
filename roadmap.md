@@ -6,5 +6,5 @@
 - [x] Saved custom stock lists
 - [x] Backtesting of the signal strategy
 - [x] Price alerts (in-app)
-- [ ] Gmail 3-email opportunity sequence — blocked: user must connect Gmail
+- [x] Gmail 3-email opportunity sequence (enable on Autopilot page)
 - [ ] Real broker connection — blocked: user's broker choice + API keys
