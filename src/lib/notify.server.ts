@@ -67,7 +67,7 @@ export async function runOpportunityEmails() {
       if (o.stage === 1) {
         const body = `Update on ${s.name} (${s.symbol}) — proposed ${o.action}\n\nStatus: ${still ? "STILL VALID" : "WEAKENED"}\nScore at detection: ${o.score_at_detect} → now ${s.score}\nPrice move since detection: ${move >= 0 ? "+" : ""}${move.toFixed(2)}%\n\n${facts(s)}\n\nAssessment: ${still ? "The signal remains in place." : "The signal has faded below the action threshold."}${footer(o.code)}`;
         await sendEmail(`[2/3] Update: ${o.action} ${s.symbol} — ${still ? "still valid" : "weakened"}`, body);
-        await supabaseAdmin.from("opportunities").update({ stage: 2, next_at: new Date(now + cfg.stage_gap_minutes * 60_000).toISOString(), log: [...(o.log as unknown[]), { stage: 2, at: new Date().toISOString(), score: s.score, price: s.price }] }).eq("id", o.id);
+        await supabaseAdmin.from("opportunities").update({ stage: 2, next_at: new Date(now + cfg.stage_gap_minutes * 60_000).toISOString(), log: [...(o.log as never[]), { stage: 2, at: new Date().toISOString(), score: s.score, price: s.price }] }).eq("id", o.id);
       } else {
         const { data: trades } = await supabaseAdmin.from("paper_trades").select("side,user_id").eq("symbol", o.symbol).eq("source", "bot").gte("created_at", o.created_at);
         const want = o.action === "BUY" ? "buy" : "sell";
@@ -75,7 +75,7 @@ export async function runOpportunityEmails() {
         const paper = n ? `Paper autopilot SUBMITTED ${n} simulated ${want} order(s).` : still ? "Paper autopilot SKIPPED (limits, market hours, or already positioned)." : "Paper autopilot SKIPPED — conditions no longer met.";
         const body = `Final status: ${s.name} (${s.symbol}) — proposed ${o.action}\n\nTrade conditions: ${still ? "SATISFIED" : "NOT SATISFIED"}\nScore: ${o.score_at_detect} → ${s.score} | price move ${move >= 0 ? "+" : ""}${move.toFixed(2)}%\n\n${paper}\nReal order: NOT SUBMITTED — no brokerage account is connected.\n\n${facts(s)}${footer(o.code)}`;
         await sendEmail(`[3/3] Final: ${o.action} ${s.symbol} — ${n ? "paper order submitted" : "skipped"}`, body);
-        await supabaseAdmin.from("opportunities").update({ stage: 3, status: "done", next_at: null, log: [...(o.log as unknown[]), { stage: 3, at: new Date().toISOString(), score: s.score, price: s.price, paper }] }).eq("id", o.id);
+        await supabaseAdmin.from("opportunities").update({ stage: 3, status: "done", next_at: null, log: [...(o.log as never[]), { stage: 3, at: new Date().toISOString(), score: s.score, price: s.price, paper }] }).eq("id", o.id);
       }
       sent++;
     } catch (e) {
