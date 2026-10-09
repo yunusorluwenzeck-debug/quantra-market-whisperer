@@ -30,9 +30,9 @@ function Dashboard() {
         supabase.from("stocks").select("symbol", head).not("score", "is", null),
         supabase.from("stocks").select("symbol", head).gte("score", 68),
         supabase.from("stocks").select("symbol", head).lte("score", 38),
-        supabase.from("job_runs").select("last_run").eq("job", "scan").maybeSingle(),
+        supabase.rpc("last_scan_time"),
       ]);
-      return { all: all.count ?? 0, scored: scored.count ?? 0, buys: buys.count ?? 0, sells: sells.count ?? 0, last: job.data?.last_run };
+      return { all: all.count ?? 0, scored: scored.count ?? 0, buys: buys.count ?? 0, sells: sells.count ?? 0, last: (job.data as string | null) ?? undefined };
     },
   });
   const top = (region: string) => ({
