@@ -7,3 +7,4 @@
 - [ ] Backtesting of the signal strategy on historical data
 - [ ] Price alerts (target above/below, in-app notifications)
 - [ ] Real broker connection (e.g. Alpaca) — blocked: needs user's broker choice + API keys
+- [ ] Gmail 3-email opportunity sequence (detected/update/final) + test email + settings — needs user to connect Gmail
