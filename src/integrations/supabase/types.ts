@@ -14,13 +14,314 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_reports: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          score: number | null
+          signal: string | null
+          symbol: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          score?: number | null
+          signal?: string | null
+          symbol: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          score?: number | null
+          signal?: string | null
+          symbol?: string
+        }
+        Relationships: []
+      }
+      bot_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          message: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          message: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bot_settings: {
+        Row: {
+          blocked_symbols: string[]
+          daily_loss_limit_pct: number
+          day_start_date: string | null
+          day_start_equity: number | null
+          emergency_stop: boolean
+          enabled: boolean
+          last_run: string | null
+          market_hours_only: boolean
+          max_drawdown_pct: number
+          max_exposure_pct: number
+          max_positions: number
+          max_trade_usd: number
+          min_score: number
+          paused_reason: string | null
+          peak_equity: number | null
+          regions: string[]
+          stop_loss_pct: number
+          take_profit_pct: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          blocked_symbols?: string[]
+          daily_loss_limit_pct?: number
+          day_start_date?: string | null
+          day_start_equity?: number | null
+          emergency_stop?: boolean
+          enabled?: boolean
+          last_run?: string | null
+          market_hours_only?: boolean
+          max_drawdown_pct?: number
+          max_exposure_pct?: number
+          max_positions?: number
+          max_trade_usd?: number
+          min_score?: number
+          paused_reason?: string | null
+          peak_equity?: number | null
+          regions?: string[]
+          stop_loss_pct?: number
+          take_profit_pct?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          blocked_symbols?: string[]
+          daily_loss_limit_pct?: number
+          day_start_date?: string | null
+          day_start_equity?: number | null
+          emergency_stop?: boolean
+          enabled?: boolean
+          last_run?: string | null
+          market_hours_only?: boolean
+          max_drawdown_pct?: number
+          max_exposure_pct?: number
+          max_positions?: number
+          max_trade_usd?: number
+          min_score?: number
+          paused_reason?: string | null
+          peak_equity?: number | null
+          regions?: string[]
+          stop_loss_pct?: number
+          take_profit_pct?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      job_runs: {
+        Row: {
+          info: string | null
+          job: string
+          last_run: string
+        }
+        Insert: {
+          info?: string | null
+          job: string
+          last_run?: string
+        }
+        Update: {
+          info?: string | null
+          job?: string
+          last_run?: string
+        }
+        Relationships: []
+      }
+      paper_accounts: {
+        Row: {
+          cash: number
+          created_at: string
+          starting_cash: number
+          user_id: string
+        }
+        Insert: {
+          cash?: number
+          created_at?: string
+          starting_cash?: number
+          user_id: string
+        }
+        Update: {
+          cash?: number
+          created_at?: string
+          starting_cash?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      paper_positions: {
+        Row: {
+          avg_cost: number
+          opened_at: string
+          qty: number
+          symbol: string
+          user_id: string
+        }
+        Insert: {
+          avg_cost: number
+          opened_at?: string
+          qty: number
+          symbol: string
+          user_id: string
+        }
+        Update: {
+          avg_cost?: number
+          opened_at?: string
+          qty?: number
+          symbol?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      paper_trades: {
+        Row: {
+          created_at: string
+          id: string
+          price: number
+          qty: number
+          realized_pnl: number | null
+          reason: string | null
+          side: string
+          source: string
+          symbol: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price: number
+          qty: number
+          realized_pnl?: number | null
+          reason?: string | null
+          side: string
+          source: string
+          symbol: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price?: number
+          qty?: number
+          realized_pnl?: number | null
+          reason?: string | null
+          side?: string
+          source?: string
+          symbol?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stocks: {
+        Row: {
+          change_pct: number | null
+          country: string
+          currency: string
+          market_cap: number | null
+          mom_1m: number | null
+          mom_3m: number | null
+          name: string
+          price: number | null
+          price_usd: number | null
+          region: string
+          rsi14: number | null
+          score: number | null
+          sector: string | null
+          signal: string | null
+          sma20: number | null
+          sma50: number | null
+          spark: Json | null
+          symbol: string
+          updated_at: string | null
+          volatility: number | null
+        }
+        Insert: {
+          change_pct?: number | null
+          country: string
+          currency?: string
+          market_cap?: number | null
+          mom_1m?: number | null
+          mom_3m?: number | null
+          name: string
+          price?: number | null
+          price_usd?: number | null
+          region: string
+          rsi14?: number | null
+          score?: number | null
+          sector?: string | null
+          signal?: string | null
+          sma20?: number | null
+          sma50?: number | null
+          spark?: Json | null
+          symbol: string
+          updated_at?: string | null
+          volatility?: number | null
+        }
+        Update: {
+          change_pct?: number | null
+          country?: string
+          currency?: string
+          market_cap?: number | null
+          mom_1m?: number | null
+          mom_3m?: number | null
+          name?: string
+          price?: number | null
+          price_usd?: number | null
+          region?: string
+          rsi14?: number | null
+          score?: number | null
+          sector?: string | null
+          signal?: string | null
+          sma20?: number | null
+          sma50?: number | null
+          spark?: Json | null
+          symbol?: string
+          updated_at?: string | null
+          volatility?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      execute_paper_trade: {
+        Args: {
+          _price: number
+          _qty: number
+          _reason: string
+          _side: string
+          _source: string
+          _symbol: string
+          _user: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
