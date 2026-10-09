@@ -1,229 +1,94 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { queryOptions, useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from "react-markdown";
-import { Area, AreaChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { getQuotes, getStock } from "@/lib/market.functions";
-
-const WATCH = ["AAPL", "NVDA", "MSFT", "TSLA", "AMZN", "GOOGL", "META", "AMD"];
-const RANGES = { "1M": 22, "3M": 66, "6M": 132, "1Y": 260 } as const;
-
-const quotesQ = queryOptions({
-  queryKey: ["quotes"],
-  queryFn: () => getQuotes({ data: { symbols: WATCH } }),
-  refetchInterval: 60_000,
-});
-const stockQ = (symbol: string) =>
-  queryOptions({ queryKey: ["stock", symbol], queryFn: () => getStock({ data: { symbol } }), refetchInterval: 60_000 });
+import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/AppShell";
+import { ROW_COLS, StockTable, type Row } from "@/components/StockTable";
+import { fmt, signalClass } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Quantra — AI Stock Analysis & Predictions" },
-      { name: "description", content: "Live stock prices, technical indicators and AI-generated price outlooks." },
-      { property: "og:title", content: "Quantra — AI Stock Analysis & Predictions" },
-      { property: "og:description", content: "Live stock prices, technical indicators and AI-generated price outlooks." },
+      { title: "Quantra — AI scanner for 4,000+ US & European stocks" },
+      { name: "description", content: "Continuously scores thousands of US and European stocks, writes AI reports on top picks, and runs a paper-trading autopilot." },
+      { property: "og:title", content: "Quantra — AI scanner for 4,000+ US & European stocks" },
+      { property: "og:description", content: "Continuously scores thousands of US and European stocks, writes AI reports on top picks, and runs a paper-trading autopilot." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Index,
+  component: Dashboard,
 });
 
-const fmt = (n: number | null | undefined, d = 2) => (n == null ? "—" : n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }));
-const tone = (n: number) => (n >= 0 ? "text-bull" : "text-bear");
+function Dashboard() {
+  const { data: stats } = useQuery({
+    queryKey: ["market-stats"], refetchInterval: 120_000,
+    queryFn: async () => {
+      const head = { count: "exact" as const, head: true };
+      const [all, scored, buys, sells, job] = await Promise.all([
+        supabase.from("stocks").select("symbol", head),
+        supabase.from("stocks").select("symbol", head).not("score", "is", null),
+        supabase.from("stocks").select("symbol", head).gte("score", 68),
+        supabase.from("stocks").select("symbol", head).lte("score", 38),
+        supabase.from("job_runs").select("last_run").eq("job", "scan").maybeSingle(),
+      ]);
+      return { all: all.count ?? 0, scored: scored.count ?? 0, buys: buys.count ?? 0, sells: sells.count ?? 0, last: job.data?.last_run };
+    },
+  });
+  const top = (region: string) => ({
+    queryKey: ["top", region], refetchInterval: 120_000,
+    queryFn: async () => (await supabase.from("stocks").select(ROW_COLS).eq("region", region).not("score", "is", null).gte("market_cap", 1e9).order("score", { ascending: false }).limit(10)).data as Row[] ?? [],
+  });
+  const { data: us } = useQuery(top("US"));
+  const { data: eu } = useQuery(top("EU"));
+  const { data: reports } = useQuery({
+    queryKey: ["reports"], refetchInterval: 300_000,
+    queryFn: async () => (await supabase.from("ai_reports").select("id,symbol,signal,score,content,created_at").order("created_at", { ascending: false }).limit(6)).data ?? [],
+  });
 
-function Index() {
-  const [symbol, setSymbol] = useState("NVDA");
-  const [search, setSearch] = useState("");
-  return (
-    <div className="min-h-screen">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-4">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-primary" />
-            <span className="text-lg font-bold tracking-tight">QUANTRA</span>
-            <span className="font-mono text-xs text-muted-foreground">/ AI market intelligence</span>
-          </div>
-          <form
-            className="ml-auto"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (search.trim()) setSymbol(search.trim().toUpperCase());
-              setSearch("");
-            }}
-          >
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search ticker… e.g. NFLX"
-              className="w-56 rounded-md border border-input bg-card px-3 py-2 font-mono text-sm uppercase outline-none placeholder:normal-case placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
-            />
-          </form>
-        </div>
-      </header>
-      <main className="mx-auto grid max-w-7xl gap-6 px-6 py-6 lg:grid-cols-[260px_1fr]">
-        <Watchlist active={symbol} onPick={setSymbol} />
-        <StockPanel key={symbol} symbol={symbol} />
-      </main>
-    </div>
-  );
-}
-
-function Watchlist({ active, onPick }: { active: string; onPick: (s: string) => void }) {
-  const { data } = useQuery(quotesQ);
-  return (
-    <aside className="rounded-lg border border-border bg-card">
-      <div className="border-b border-border px-4 py-3 font-mono text-xs uppercase tracking-widest text-muted-foreground">Watchlist</div>
-      <ul>
-        {(data ?? WATCH.map((s) => ({ symbol: s, price: 0, changePct: 0, spark: [] as number[] }))).map((q) => (
-          <li key={q.symbol}>
-            <button
-              onClick={() => onPick(q.symbol)}
-              className={`flex w-full items-center gap-3 border-l-2 px-4 py-3 text-left transition-colors hover:bg-accent ${active === q.symbol ? "border-primary bg-accent" : "border-transparent"}`}
-            >
-              <span className="w-14 font-mono text-sm font-semibold">{q.symbol}</span>
-              <div className="h-8 flex-1">
-                {q.spark.length > 0 && (
-                  <ResponsiveContainer>
-                    <LineChart data={q.spark.map((v) => ({ v }))}>
-                      <YAxis hide domain={["dataMin", "dataMax"]} />
-                      <Line dataKey="v" dot={false} strokeWidth={1.5} stroke={q.changePct >= 0 ? "var(--bull)" : "var(--bear)"} isAnimationActive={false} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
-              </div>
-              <div className="text-right font-mono text-xs">
-                <div>{q.price ? fmt(q.price) : "…"}</div>
-                <div className={tone(q.changePct)}>{q.price ? `${q.changePct >= 0 ? "+" : ""}${fmt(q.changePct)}%` : ""}</div>
-              </div>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </aside>
-  );
-}
-
-function StockPanel({ symbol }: { symbol: string }) {
-  const { data, isLoading } = useQuery(stockQ(symbol));
-  const [range, setRange] = useState<keyof typeof RANGES>("6M");
-  if (isLoading) return <div className="animate-pulse rounded-lg border border-border bg-card p-10 font-mono text-sm text-muted-foreground">Loading {symbol}…</div>;
-  if (!data?.stock) return <div className="rounded-lg border border-border bg-card p-10 text-bear">{data?.error ?? "Could not load data"}</div>;
-  const s = data.stock;
-  const pts = s.candles.slice(-RANGES[range]).map((c) => ({ d: new Date(c.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }), c: c.c }));
-  const up = pts.length > 1 && pts.at(-1)!.c >= pts[0]!.c;
-  const ind = s.indicators;
-  const stats = [
-    ["SMA 20", fmt(ind.sma20)],
-    ["SMA 50", fmt(ind.sma50)],
-    ["RSI 14", fmt(ind.rsi14, 1)],
-    ["Volatility", `${fmt(ind.volatility, 1)}%`],
-    ["1M Momentum", `${fmt(ind.momentum1m)}%`],
-    ["52W Range", `${fmt(ind.low52)} – ${fmt(ind.high52)}`],
+  const tiles = [
+    ["Companies tracked", fmt(stats?.all, 0)],
+    ["Scored", fmt(stats?.scored, 0)],
+    ["Buy signals", fmt(stats?.buys, 0)],
+    ["Sell signals", fmt(stats?.sells, 0)],
+    ["Last scan", stats?.last ? new Date(stats.last).toLocaleTimeString() : "—"],
   ];
   return (
     <div className="grid gap-6">
-      <section className="rounded-lg border border-border bg-card p-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="font-mono text-xs text-muted-foreground">{s.exchange} · {s.currency}</div>
-            <h1 className="mt-1 text-2xl font-bold">{s.name} <span className="font-mono text-base text-muted-foreground">{s.symbol}</span></h1>
-            <div className="mt-2 flex items-baseline gap-3 font-mono">
-              <span className="text-4xl font-semibold">{fmt(s.price)}</span>
-              <span className={`text-lg ${tone(s.change)}`}>{s.change >= 0 ? "+" : ""}{fmt(s.change)} ({fmt(s.changePct)}%)</span>
-            </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Market intelligence</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Every listed company in our US and European universe is re-scored around the clock on trend, momentum, RSI and volatility. The AI writes deep-dive reports on the strongest setups.</p>
+      </div>
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-5">
+        {tiles.map(([k, v]) => (
+          <div key={k} className="bg-card p-4">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{k}</div>
+            <div className="mt-1 font-mono text-xl font-semibold">{v}</div>
           </div>
-          <div className="flex gap-1 rounded-md bg-muted p-1 font-mono text-xs">
-            {(Object.keys(RANGES) as (keyof typeof RANGES)[]).map((r) => (
-              <button key={r} onClick={() => setRange(r)} className={`rounded px-3 py-1.5 ${range === r ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>{r}</button>
+        ))}
+      </div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card title="Top picks · US" right={<Link to="/screener" search={{ region: "US" }} className="font-mono text-xs text-primary">All →</Link>}><StockTable rows={us ?? []} compactMode /></Card>
+        <Card title="Top picks · Europe" right={<Link to="/screener" search={{ region: "EU" }} className="font-mono text-xs text-primary">All →</Link>}><StockTable rows={eu ?? []} compactMode /></Card>
+      </div>
+      <Card title="Latest AI reports on top picks">
+        {!reports?.length ? (
+          <p className="p-4 text-sm text-muted-foreground">Reports are generated automatically every few hours for the highest-scoring stocks.</p>
+        ) : (
+          <div className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
+            {reports.map((r) => (
+              <article key={r.id} className="bg-card p-4">
+                <div className="flex items-center justify-between">
+                  <Link to="/stock/$symbol" params={{ symbol: r.symbol }} className="font-mono font-semibold hover:text-primary">{r.symbol}</Link>
+                  <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] ${signalClass(r.signal)}`}>{r.signal} · {r.score}</span>
+                </div>
+                <div className="prose-ai mt-2 max-h-56 overflow-hidden text-xs"><ReactMarkdown>{r.content}</ReactMarkdown></div>
+                <div className="mt-2 font-mono text-[10px] text-muted-foreground">{new Date(r.created_at).toLocaleString()}</div>
+              </article>
             ))}
           </div>
-        </div>
-        <div className="mt-6 h-72">
-          <ResponsiveContainer>
-            <AreaChart data={pts}>
-              <defs>
-                <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={up ? "var(--bull)" : "var(--bear)"} stopOpacity={0.35} />
-                  <stop offset="100%" stopColor={up ? "var(--bull)" : "var(--bear)"} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="d" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} minTickGap={40} />
-              <YAxis domain={["auto", "auto"]} orientation="right" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} width={60} />
-              <Tooltip contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 6, fontFamily: "var(--font-mono)" }} formatter={(v: number) => [fmt(v), "Close"]} />
-              <Area dataKey="c" type="monotone" stroke={up ? "var(--bull)" : "var(--bear)"} strokeWidth={2} fill="url(#g)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3 lg:grid-cols-6">
-          {stats.map(([k, v]) => (
-            <div key={k} className="bg-card p-3">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{k}</div>
-              <div className="mt-1 font-mono text-sm">{v}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-      <AiPanel symbol={s.symbol} />
-    </div>
-  );
-}
-
-function AiPanel({ symbol }: { symbol: string }) {
-  const [text, setText] = useState("");
-  const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
-  const [err, setErr] = useState("");
-  const abort = useRef<AbortController | null>(null);
-  useEffect(() => () => abort.current?.abort(), []);
-
-  async function run() {
-    abort.current?.abort();
-    const ac = new AbortController();
-    abort.current = ac;
-    setText(""); setErr(""); setState("loading");
-    try {
-      const res = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ symbol }), signal: ac.signal });
-      if (!res.ok || !res.body) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j.error ?? (res.status === 429 ? "Too many requests, try again shortly." : res.status === 402 ? "AI credits exhausted." : "Analysis failed"));
-      }
-      const reader = res.body.getReader();
-      const dec = new TextDecoder();
-      let acc = "";
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        acc += dec.decode(value, { stream: true });
-        setText(acc);
-      }
-      if (!acc.trim()) throw new Error("The AI returned no analysis. Please try again later.");
-      setState("done");
-    } catch (e) {
-      if (ac.signal.aborted) { setState("idle"); return; }
-      setErr(e instanceof Error ? e.message : "Analysis failed");
-      setState("error");
-    }
-  }
-
-  return (
-    <section className="rounded-lg border border-primary/30 bg-card p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <div className="font-mono text-xs uppercase tracking-widest text-primary">AI Prediction Engine</div>
-          <p className="mt-1 text-sm text-muted-foreground">Signal, price outlook and key levels for {symbol}, from live technical data.</p>
-        </div>
-        {state === "loading" ? (
-          <button onClick={() => abort.current?.abort()} className="rounded-md border border-border px-4 py-2 font-mono text-sm hover:bg-accent">Stop</button>
-        ) : (
-          <button onClick={run} className="rounded-md bg-primary px-4 py-2 font-mono text-sm font-semibold text-primary-foreground hover:opacity-90">
-            {state === "done" ? "Re-run analysis" : "Run AI analysis"}
-          </button>
         )}
-      </div>
-      {state === "loading" && !text && <div className="mt-6 animate-pulse font-mono text-sm text-muted-foreground">Analyzing market structure…</div>}
-      {state === "error" && <div className="mt-6 text-sm text-bear">{err}</div>}
-      {text && <div className="prose-ai mt-4"><ReactMarkdown>{text}</ReactMarkdown></div>}
-    </section>
+      </Card>
+    </div>
   );
 }
