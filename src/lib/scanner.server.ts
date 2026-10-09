@@ -142,3 +142,29 @@ export function marketOpen(region: string, d = new Date()) {
   const m = d.getUTCHours() * 60 + d.getUTCMinutes();
   return region === "US" ? m >= 13 * 60 + 30 && m < 20 * 60 : m >= 7 * 60 && m < 15 * 60 + 30;
 }
+
+/** Checks open price alerts against fresh prices (in each stock's own currency). */
+export async function checkAlerts() {
+  const { data: open } = await supabaseAdmin.from("price_alerts").select("id,symbol,direction,target").is("triggered_at", null).limit(2000);
+  if (!open?.length) return 0;
+  const syms = [...new Set(open.map((a) => a.symbol))].slice(0, 200);
+  const prices: Record<string, number> = {};
+  for (let i = 0; i < syms.length; i += 20) {
+    const res = await spark(syms.slice(i, i + 20)).catch(() => ({}));
+    for (const [k, v] of Object.entries(res as Record<string, { close?: (number | null)[] }>)) {
+      const c = v?.close?.filter((x): x is number => x != null).at(-1);
+      if (c) prices[k] = c;
+    }
+  }
+  let hit = 0;
+  const now = new Date().toISOString();
+  for (const a of open) {
+    const p = prices[a.symbol];
+    if (p == null) continue;
+    if ((a.direction === "above" && p >= Number(a.target)) || (a.direction === "below" && p <= Number(a.target))) {
+      await supabaseAdmin.from("price_alerts").update({ triggered_at: now, triggered_price: p }).eq("id", a.id);
+      hit++;
+    }
+  }
+  return hit;
+}
