@@ -82,7 +82,7 @@ function Dashboard() {
                   <Link to="/stock/$symbol" params={{ symbol: r.symbol }} className="font-mono font-semibold hover:text-primary">{r.symbol}</Link>
                   <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] ${signalClass(r.signal)}`}>{r.signal} · {r.score}</span>
                 </div>
-                <div className="prose-ai mt-2 line-clamp-[10] text-xs"><ReactMarkdown>{r.content}</ReactMarkdown></div>
+                <div className="prose-ai mt-2 max-h-56 overflow-hidden text-xs"><ReactMarkdown>{r.content}</ReactMarkdown></div>
                 <div className="mt-2 font-mono text-[10px] text-muted-foreground">{new Date(r.created_at).toLocaleString()}</div>
               </article>
             ))}
