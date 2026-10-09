@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiAnalyzeRouteImport } from './routes/api/analyze'
+import { Route as ApiPublicHooksAutotradeRouteImport } from './routes/api/public/hooks/autotrade'
+import { Route as ApiPublicHooksScanRouteImport } from './routes/api/public/hooks/scan'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +24,62 @@ const ApiAnalyzeRoute = ApiAnalyzeRouteImport.update({
   path: '/api/analyze',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksAutotradeRoute = ApiPublicHooksAutotradeRouteImport.update({
+  id: '/api/public/hooks/autotrade',
+  path: '/api/public/hooks/autotrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHooksScanRoute = ApiPublicHooksScanRouteImport.update({
+  id: '/api/public/hooks/scan',
+  path: '/api/public/hooks/scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/analyze': typeof ApiAnalyzeRoute
+  '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
+  '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/analyze': typeof ApiAnalyzeRoute
+  '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
+  '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/analyze': typeof ApiAnalyzeRoute
+  '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
+  '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/analyze'
+  fullPaths:
+    | '/'
+    | '/api/analyze'
+    | '/api/public/hooks/autotrade'
+    | '/api/public/hooks/scan'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/analyze'
-  id: '__root__' | '/' | '/api/analyze'
+  to:
+    | '/'
+    | '/api/analyze'
+    | '/api/public/hooks/autotrade'
+    | '/api/public/hooks/scan'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/analyze'
+    | '/api/public/hooks/autotrade'
+    | '/api/public/hooks/scan'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiAnalyzeRoute: typeof ApiAnalyzeRoute
+  ApiPublicHooksAutotradeRoute: typeof ApiPublicHooksAutotradeRoute
+  ApiPublicHooksScanRoute: typeof ApiPublicHooksScanRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +98,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalyzeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/autotrade': {
+      id: '/api/public/hooks/autotrade'
+      path: '/api/public/hooks/autotrade'
+      fullPath: '/api/public/hooks/autotrade'
+      preLoaderRoute: typeof ApiPublicHooksAutotradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/scan': {
+      id: '/api/public/hooks/scan'
+      path: '/api/public/hooks/scan'
+      fullPath: '/api/public/hooks/scan'
+      preLoaderRoute: typeof ApiPublicHooksScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiAnalyzeRoute: ApiAnalyzeRoute,
+  ApiPublicHooksAutotradeRoute: ApiPublicHooksAutotradeRoute,
+  ApiPublicHooksScanRoute: ApiPublicHooksScanRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
