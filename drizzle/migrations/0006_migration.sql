@@ -1,0 +1,10 @@
+DROP POLICY IF EXISTS "email settings read" ON public.email_settings;
+REVOKE SELECT ON public.email_settings FROM anon, authenticated;
+DROP POLICY IF EXISTS "opportunities read" ON public.opportunities;
+REVOKE SELECT ON public.opportunities FROM anon, authenticated;
+DROP POLICY IF EXISTS "reports public read" ON public.ai_reports;
+REVOKE SELECT ON public.ai_reports FROM anon;
+CREATE POLICY "reports signed-in read" ON public.ai_reports FOR SELECT TO authenticated USING (auth.uid() IS NOT NULL);
+DROP POLICY IF EXISTS "stocks public read" ON public.stocks;
+REVOKE SELECT ON public.stocks FROM anon;
+CREATE POLICY "stocks signed-in read" ON public.stocks FOR SELECT TO authenticated USING (auth.uid() IS NOT NULL);

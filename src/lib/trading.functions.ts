@@ -115,6 +115,17 @@ export const sendTestEmail = createServerFn({ method: "POST" })
     } catch (e) { return { ok: false, to: null, error: e instanceof Error ? e.message : "Send failed" }; }
   });
 
+export const getEmailPanel = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [s, o] = await Promise.all([
+      supabaseAdmin.from("email_settings").select("enabled,min_score,max_sequences_per_day,stage_gap_minutes").eq("id", 1).maybeSingle(),
+      supabaseAdmin.from("opportunities").select("id,code,symbol,action,stage,status,score_at_detect,created_at").order("created_at", { ascending: false }).limit(15),
+    ]);
+    return { s: s.data, opps: o.data ?? [] };
+  });
+
 export const saveEmailSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ enabled: z.boolean(), min_score: z.number().int().min(60).max(100), max_sequences_per_day: z.number().int().min(1).max(20), stage_gap_minutes: z.number().int().min(30).max(1440) }).parse(d))
