@@ -236,6 +236,42 @@ export type Database = {
         }
         Relationships: []
       }
+      price_alerts: {
+        Row: {
+          created_at: string
+          direction: string
+          id: string
+          seen: boolean
+          symbol: string
+          target: number
+          triggered_at: string | null
+          triggered_price: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          direction?: string
+          id?: string
+          seen?: boolean
+          symbol: string
+          target: number
+          triggered_at?: string | null
+          triggered_price?: number | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          id?: string
+          seen?: boolean
+          symbol?: string
+          target?: number
+          triggered_at?: string | null
+          triggered_price?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       stock_lists: {
         Row: {
           created_at: string

@@ -15,6 +15,13 @@
       "when": 1791538061196,
       "tag": "0001_stock_lists",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791538116870,
+      "tag": "0002_price_alerts",
+      "breakpoints": true
     }
   ]
 }
