@@ -236,6 +236,30 @@ export type Database = {
         }
         Relationships: []
       }
+      stock_lists: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          symbols: string[]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          symbols?: string[]
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          symbols?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
       stocks: {
         Row: {
           change_pct: number | null
