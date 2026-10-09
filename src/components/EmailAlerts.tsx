@@ -2,8 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { getEmailStatus, saveEmailSettings, sendTestEmail } from "@/lib/trading.functions";
+import { getEmailPanel, getEmailStatus, saveEmailSettings, sendTestEmail } from "@/lib/trading.functions";
 import { Card } from "@/components/AppShell";
 
 export function EmailAlerts() {
@@ -11,16 +10,11 @@ export function EmailAlerts() {
   const status = useServerFn(getEmailStatus);
   const test = useServerFn(sendTestEmail);
   const save = useServerFn(saveEmailSettings);
+  const panel = useServerFn(getEmailPanel);
   const { data: addr } = useQuery({ queryKey: ["gmail"], queryFn: () => status() });
   const { data } = useQuery({
     queryKey: ["email-settings"], refetchInterval: 60_000,
-    queryFn: async () => {
-      const [s, o] = await Promise.all([
-        supabase.from("email_settings").select("*").eq("id", 1).maybeSingle(),
-        supabase.from("opportunities").select("id,code,symbol,action,stage,status,score_at_detect,created_at").order("created_at", { ascending: false }).limit(15),
-      ]);
-      return { s: s.data, opps: o.data ?? [] };
-    },
+    queryFn: () => panel(),
   });
   const [f, setF] = useState({ enabled: false, min_score: 85, max_sequences_per_day: 3, stage_gap_minutes: 120 });
   useEffect(() => { if (data?.s) setF({ enabled: data.s.enabled, min_score: data.s.min_score, max_sequences_per_day: data.s.max_sequences_per_day, stage_gap_minutes: data.s.stage_gap_minutes }); }, [data?.s]);
