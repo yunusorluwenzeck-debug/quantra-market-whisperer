@@ -96,3 +96,30 @@ export const backtest = createServerFn({ method: "POST" })
       return { result: null, error: e instanceof Error ? e.message : "Backtest failed" };
     }
   });
+
+export const getEmailStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { gmailAddress } = await import("./notify.server");
+    try { return { address: await gmailAddress(), error: null }; }
+    catch (e) { return { address: null, error: e instanceof Error ? e.message : "Gmail unavailable" }; }
+  });
+
+export const sendTestEmail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { sendEmail } = await import("./notify.server");
+    try {
+      const to = await sendEmail("Quantra test email", `Your Gmail connection works.\n\nSent: ${new Date().toISOString()}`);
+      return { ok: true, to, error: null };
+    } catch (e) { return { ok: false, to: null, error: e instanceof Error ? e.message : "Send failed" }; }
+  });
+
+export const saveEmailSettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ enabled: z.boolean(), min_score: z.number().int().min(60).max(100), max_sequences_per_day: z.number().int().min(1).max(20), stage_gap_minutes: z.number().int().min(30).max(1440) }).parse(d))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("email_settings").upsert({ id: 1, ...data, updated_at: new Date().toISOString() });
+    return { ok: !error, error: error?.message ?? null };
+  });

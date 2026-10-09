@@ -134,6 +134,33 @@ export type Database = {
         }
         Relationships: []
       }
+      email_settings: {
+        Row: {
+          enabled: boolean
+          id: number
+          max_sequences_per_day: number
+          min_score: number
+          stage_gap_minutes: number
+          updated_at: string
+        }
+        Insert: {
+          enabled?: boolean
+          id?: number
+          max_sequences_per_day?: number
+          min_score?: number
+          stage_gap_minutes?: number
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          id?: number
+          max_sequences_per_day?: number
+          min_score?: number
+          stage_gap_minutes?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       job_runs: {
         Row: {
           info: string | null
@@ -149,6 +176,48 @@ export type Database = {
           info?: string | null
           job?: string
           last_run?: string
+        }
+        Relationships: []
+      }
+      opportunities: {
+        Row: {
+          action: string
+          code: string
+          created_at: string
+          id: string
+          log: Json
+          next_at: string | null
+          price_at_detect: number
+          score_at_detect: number
+          stage: number
+          status: string
+          symbol: string
+        }
+        Insert: {
+          action: string
+          code: string
+          created_at?: string
+          id?: string
+          log?: Json
+          next_at?: string | null
+          price_at_detect: number
+          score_at_detect: number
+          stage?: number
+          status?: string
+          symbol: string
+        }
+        Update: {
+          action?: string
+          code?: string
+          created_at?: string
+          id?: string
+          log?: Json
+          next_at?: string | null
+          price_at_detect?: number
+          score_at_detect?: number
+          stage?: number
+          status?: string
+          symbol?: string
         }
         Relationships: []
       }

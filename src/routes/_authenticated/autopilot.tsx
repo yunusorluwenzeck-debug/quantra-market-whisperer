@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { runBotNow, saveBotSettings, setEmergencyStop } from "@/lib/trading.functions";
 import { Card } from "@/components/AppShell";
+import { EmailAlerts } from "@/components/EmailAlerts";
 
 export const Route = createFileRoute("/_authenticated/autopilot")({
   head: () => ({
@@ -124,6 +125,7 @@ function Autopilot() {
           </ul>
         </Card>
       </div>
+      <EmailAlerts />
       <p className="text-xs text-muted-foreground">Real-money trading is not connected. Linking a broker account requires a compatible brokerage with an official trading API.</p>
     </div>
   );
