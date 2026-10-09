@@ -451,6 +451,7 @@ export type Database = {
         }
         Returns: Json
       }
+      last_scan_time: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
