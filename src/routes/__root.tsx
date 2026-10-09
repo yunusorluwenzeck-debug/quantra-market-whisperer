@@ -125,6 +125,13 @@ function RootComponent() {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      if (event === "SIGNED_IN") {
+        const next = sessionStorage.getItem("post-auth");
+        if (next && next.startsWith("/") && !next.startsWith("//")) {
+          sessionStorage.removeItem("post-auth");
+          void router.navigate({ to: next });
+        }
+      }
     });
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);

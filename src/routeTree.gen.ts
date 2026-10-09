@@ -10,7 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BacktestRouteImport } from './routes/backtest'
+import { Route as ScreenerRouteImport } from './routes/screener'
+import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
+import { Route as AuthenticatedAutopilotRouteImport } from './routes/_authenticated/autopilot'
+import { Route as AuthenticatedListsRouteImport } from './routes/_authenticated/lists'
+import { Route as AuthenticatedPortfolioRouteImport } from './routes/_authenticated/portfolio'
 import { Route as ApiAnalyzeRouteImport } from './routes/api/analyze'
+import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
 import { Route as ApiPublicHooksAutotradeRouteImport } from './routes/api/public/hooks/autotrade'
 import { Route as ApiPublicHooksScanRouteImport } from './routes/api/public/hooks/scan'
 
@@ -19,9 +28,53 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BacktestRoute = BacktestRouteImport.update({
+  id: '/backtest',
+  path: '/backtest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScreenerRoute = ScreenerRouteImport.update({
+  id: '/screener',
+  path: '/screener',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAlertsRoute = AuthenticatedAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAutopilotRoute = AuthenticatedAutopilotRouteImport.update({
+  id: '/autopilot',
+  path: '/autopilot',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedListsRoute = AuthenticatedListsRouteImport.update({
+  id: '/lists',
+  path: '/lists',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPortfolioRoute = AuthenticatedPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiAnalyzeRoute = ApiAnalyzeRouteImport.update({
   id: '/api/analyze',
   path: '/api/analyze',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StockSymbolRoute = StockSymbolRouteImport.update({
+  id: '/stock/$symbol',
+  path: '/stock/$symbol',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicHooksAutotradeRoute = ApiPublicHooksAutotradeRouteImport.update({
@@ -37,20 +90,45 @@ const ApiPublicHooksScanRoute = ApiPublicHooksScanRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/backtest': typeof BacktestRoute
+  '/screener': typeof ScreenerRoute
+  '/alerts': typeof AuthenticatedAlertsRoute
+  '/autopilot': typeof AuthenticatedAutopilotRoute
+  '/lists': typeof AuthenticatedListsRoute
+  '/portfolio': typeof AuthenticatedPortfolioRoute
   '/api/analyze': typeof ApiAnalyzeRoute
+  '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/backtest': typeof BacktestRoute
+  '/screener': typeof ScreenerRoute
+  '/alerts': typeof AuthenticatedAlertsRoute
+  '/autopilot': typeof AuthenticatedAutopilotRoute
+  '/lists': typeof AuthenticatedListsRoute
+  '/portfolio': typeof AuthenticatedPortfolioRoute
   '/api/analyze': typeof ApiAnalyzeRoute
+  '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/backtest': typeof BacktestRoute
+  '/screener': typeof ScreenerRoute
+  '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
+  '/_authenticated/autopilot': typeof AuthenticatedAutopilotRoute
+  '/_authenticated/lists': typeof AuthenticatedListsRoute
+  '/_authenticated/portfolio': typeof AuthenticatedPortfolioRoute
   '/api/analyze': typeof ApiAnalyzeRoute
+  '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
 }
@@ -58,26 +136,56 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/backtest'
+    | '/screener'
+    | '/alerts'
+    | '/autopilot'
+    | '/lists'
+    | '/portfolio'
     | '/api/analyze'
+    | '/stock/$symbol'
     | '/api/public/hooks/autotrade'
     | '/api/public/hooks/scan'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
+    | '/backtest'
+    | '/screener'
+    | '/alerts'
+    | '/autopilot'
+    | '/lists'
+    | '/portfolio'
     | '/api/analyze'
+    | '/stock/$symbol'
     | '/api/public/hooks/autotrade'
     | '/api/public/hooks/scan'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/backtest'
+    | '/screener'
+    | '/_authenticated/alerts'
+    | '/_authenticated/autopilot'
+    | '/_authenticated/lists'
+    | '/_authenticated/portfolio'
     | '/api/analyze'
+    | '/stock/$symbol'
     | '/api/public/hooks/autotrade'
     | '/api/public/hooks/scan'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  BacktestRoute: typeof BacktestRoute
+  ScreenerRoute: typeof ScreenerRoute
   ApiAnalyzeRoute: typeof ApiAnalyzeRoute
+  StockSymbolRoute: typeof StockSymbolRoute
   ApiPublicHooksAutotradeRoute: typeof ApiPublicHooksAutotradeRoute
   ApiPublicHooksScanRoute: typeof ApiPublicHooksScanRoute
 }
@@ -91,11 +199,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/backtest': {
+      id: '/backtest'
+      path: '/backtest'
+      fullPath: '/backtest'
+      preLoaderRoute: typeof BacktestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/screener': {
+      id: '/screener'
+      path: '/screener'
+      fullPath: '/screener'
+      preLoaderRoute: typeof ScreenerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/alerts': {
+      id: '/_authenticated/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AuthenticatedAlertsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/autopilot': {
+      id: '/_authenticated/autopilot'
+      path: '/autopilot'
+      fullPath: '/autopilot'
+      preLoaderRoute: typeof AuthenticatedAutopilotRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/lists': {
+      id: '/_authenticated/lists'
+      path: '/lists'
+      fullPath: '/lists'
+      preLoaderRoute: typeof AuthenticatedListsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portfolio': {
+      id: '/_authenticated/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof AuthenticatedPortfolioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/analyze': {
       id: '/api/analyze'
       path: '/api/analyze'
       fullPath: '/api/analyze'
       preLoaderRoute: typeof ApiAnalyzeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stock/$symbol': {
+      id: '/stock/$symbol'
+      path: '/stock/$symbol'
+      fullPath: '/stock/$symbol'
+      preLoaderRoute: typeof StockSymbolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/autotrade': {
@@ -115,9 +286,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
+  AuthenticatedAutopilotRoute: typeof AuthenticatedAutopilotRoute
+  AuthenticatedListsRoute: typeof AuthenticatedListsRoute
+  AuthenticatedPortfolioRoute: typeof AuthenticatedPortfolioRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
+  AuthenticatedAutopilotRoute: AuthenticatedAutopilotRoute,
+  AuthenticatedListsRoute: AuthenticatedListsRoute,
+  AuthenticatedPortfolioRoute: AuthenticatedPortfolioRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  BacktestRoute: BacktestRoute,
+  ScreenerRoute: ScreenerRoute,
   ApiAnalyzeRoute: ApiAnalyzeRoute,
+  StockSymbolRoute: StockSymbolRoute,
   ApiPublicHooksAutotradeRoute: ApiPublicHooksAutotradeRoute,
   ApiPublicHooksScanRoute: ApiPublicHooksScanRoute,
 }
