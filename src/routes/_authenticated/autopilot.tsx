@@ -55,7 +55,7 @@ function Autopilot() {
     const enabled = enabledOverride ?? f.enabled;
     if (enabled && !data?.s?.enabled && !confirm("Authorize the AI to buy and sell automatically in your paper portfolio within these limits? No real money is used.")) return;
     const r = await save({ data: { ...f, enabled, max_trade_usd: Number(f.max_trade_usd), blocked_symbols: blocked.split(/[\s,]+/).map((x) => x.trim().toUpperCase()).filter(Boolean) } });
-    if (!r.ok) return toast.error(r.error ?? "Save failed");
+    if (!r.ok) { toast.error(r.error ?? "Save failed"); return; }
     toast.success("Settings saved");
     qc.invalidateQueries({ queryKey: ["bot"] });
   }

@@ -109,7 +109,7 @@ function TradeBox({ symbol, priceUsd, currency }: { symbol: string; priceUsd: nu
     setBusy(true);
     const r = await order({ data: side === "sell" && pos && Number(amt) <= 0 ? { symbol, side, qty: Number(pos.qty) } : { symbol, side, amountUsd: Number(amt) } });
     setBusy(false);
-    if (!r.ok) return toast.error(r.error ?? "Order failed");
+    if (!r.ok) { toast.error(r.error ?? "Order failed"); return; }
     toast.success(`Simulated ${side} of ${fmt(r.qty, 4)} ${symbol} @ ${usd(r.price)}`);
     qc.invalidateQueries();
   }
@@ -152,7 +152,7 @@ function ListAndAlert({ symbol, price, currency }: { symbol: string; price: numb
   }
   async function addAlert() {
     const t = Number(target);
-    if (!(t > 0)) return toast.error("Enter a target price");
+    if (!(t > 0)) { toast.error("Enter a target price"); return; }
     const { error } = await supabase.from("price_alerts").insert({ symbol, direction: dir, target: t });
     if (error) toast.error(error.message); else { toast.success(`Alert set: ${symbol} ${dir} ${fmt(t)} ${currency}`); qc.invalidateQueries({ queryKey: ["alerts"] }); }
   }

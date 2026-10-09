@@ -39,7 +39,7 @@ function Lists() {
     e.preventDefault();
     if (!name.trim()) return;
     const { data, error } = await supabase.from("stock_lists").insert({ name: name.trim() }).select("id").single();
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setName(""); setActive(data.id); refresh();
   }
   async function addSym(e: React.FormEvent) {
@@ -47,7 +47,7 @@ function Lists() {
     const s = add.trim().toUpperCase();
     if (!s || !cur) return;
     const { data: ok } = await supabase.from("stocks").select("symbol").eq("symbol", s).maybeSingle();
-    if (!ok) return toast.error(`${s} isn't in our tracked universe`);
+    if (!ok) { toast.error(`${s} isn't in our tracked universe`); return; }
     await supabase.from("stock_lists").update({ symbols: [...new Set([...cur.symbols, s])] }).eq("id", cur.id);
     setAdd(""); refresh();
   }

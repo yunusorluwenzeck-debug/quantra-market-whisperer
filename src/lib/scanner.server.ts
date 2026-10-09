@@ -125,8 +125,8 @@ export async function runScan(limit = 760) {
   // upsert requires all NOT NULL cols on insert path; rows exist so use update-by-upsert with names
   const names = new Map(UNIVERSE.map((u) => [u[0], u]));
   const rows = updates.map((u) => {
-    const n = names.get(u.symbol as string);
-    return { name: n?.[1] ?? (u.symbol as string), country: n?.[2] ?? "US", region: n?.[2] === "US" || !n ? "US" : "EU", ...u };
+    const n = names.get(u["symbol"] as string);
+    return { name: n?.[1] ?? (u["symbol"] as string), country: n?.[2] ?? "US", region: n?.[2] === "US" || !n ? "US" : "EU", ...u };
   });
   for (let i = 0; i < rows.length; i += 500) {
     const { error: e } = await supabaseAdmin.from("stocks").upsert(rows.slice(i, i + 500) as never, { onConflict: "symbol" });
