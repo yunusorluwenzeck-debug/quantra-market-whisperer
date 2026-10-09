@@ -28,7 +28,7 @@ function rsi(c: number[], n = 14) {
   if (c.length <= n) return null;
   let g = 0, l = 0;
   for (let i = c.length - n; i < c.length; i++) {
-    const d = c[i] - c[i - 1];
+    const d = c[i]! - c[i - 1]!;
     if (d > 0) g += d; else l -= d;
   }
   if (l === 0) return 100;
@@ -53,7 +53,7 @@ export async function fetchStock(symbol: string): Promise<StockData> {
   const closes = candles.map((x) => x.c);
   const price = r.meta.regularMarketPrice ?? closes.at(-1);
   const prevClose = closes.length > 1 ? closes.at(-2)! : price;
-  const rets = closes.slice(-60).map((c, i, a) => (i ? Math.log(c / a[i - 1]) : 0)).slice(1);
+  const rets = closes.slice(-60).map((c, i, a) => (i ? Math.log(c / a[i - 1]!) : 0)).slice(1);
   const mean = rets.reduce((s, x) => s + x, 0) / (rets.length || 1);
   const sd = Math.sqrt(rets.reduce((s, x) => s + (x - mean) ** 2, 0) / (rets.length || 1));
   return {

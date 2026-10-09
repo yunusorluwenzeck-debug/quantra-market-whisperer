@@ -112,7 +112,7 @@ function StockPanel({ symbol }: { symbol: string }) {
   if (!data?.stock) return <div className="rounded-lg border border-border bg-card p-10 text-bear">{data?.error ?? "Could not load data"}</div>;
   const s = data.stock;
   const pts = s.candles.slice(-RANGES[range]).map((c) => ({ d: new Date(c.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }), c: c.c }));
-  const up = pts.length > 1 && pts.at(-1)!.c >= pts[0].c;
+  const up = pts.length > 1 && pts.at(-1)!.c >= pts[0]!.c;
   const ind = s.indicators;
   const stats = [
     ["SMA 20", fmt(ind.sma20)],
