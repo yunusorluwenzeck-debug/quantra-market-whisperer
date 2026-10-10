@@ -107,7 +107,7 @@ function TradeBox({ symbol, priceUsd, currency }: { symbol: string; priceUsd: nu
   });
   async function go(side: "buy" | "sell") {
     setBusy(true);
-    const r = await order({ data: side === "sell" && pos && Number(amt) <= 0 ? { symbol, side, qty: Number(pos.qty) } : { symbol, side, amountUsd: Number(amt) } });
+    const r = await order({ data: { clientKey: crypto.randomUUID(), ...(side === "sell" && pos && Number(amt) <= 0 ? { symbol, side, qty: Number(pos.qty) } : { symbol, side, amountUsd: Number(amt) }) } });
     setBusy(false);
     if (!r.ok) { toast.error(r.error ?? "Order failed"); return; }
     toast.success(`Simulated ${side} of ${fmt(r.qty, 4)} ${symbol} @ ${usd(r.price)}`);
@@ -128,7 +128,7 @@ function TradeBox({ symbol, priceUsd, currency }: { symbol: string; priceUsd: nu
             <button disabled={busy} onClick={() => go("buy")} className="rounded-md bg-bull py-2 font-mono text-sm font-semibold text-background disabled:opacity-50">Buy</button>
             <button disabled={busy || !pos} onClick={() => go("sell")} className="rounded-md bg-bear py-2 font-mono text-sm font-semibold text-background disabled:opacity-50">Sell</button>
           </div>
-          {pos && <button disabled={busy} onClick={() => { setAmt("0"); void order({ data: { symbol, side: "sell", qty: Number(pos.qty) } }).then((r) => { r.ok ? toast.success("Position closed") : toast.error(r.error ?? "Failed"); qc.invalidateQueries(); }); }} className="font-mono text-xs text-muted-foreground hover:text-foreground">Close entire position</button>}
+          {pos && <button disabled={busy} onClick={() => { setAmt("0"); void order({ data: { clientKey: crypto.randomUUID(), symbol, side: "sell", qty: Number(pos.qty) } }).then((r) => { r.ok ? toast.success("Position closed") : toast.error(r.error ?? "Failed"); qc.invalidateQueries(); }); }} className="font-mono text-xs text-muted-foreground hover:text-foreground">Close entire position</button>}
         </div>
       )}
     </section>
