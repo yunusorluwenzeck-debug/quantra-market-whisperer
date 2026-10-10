@@ -34,6 +34,13 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => { if (data.session) nav({ to: safePath(redirect) }); });
+    // Full-page OAuth redirects come back with ?error=… when the provider sign-in failed.
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("error")) {
+      reportOauthFailure({ data: { provider: "google" } }).catch(() => {});
+      toast.error("Google sign-in failed. Please try again.");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
   }, [nav, redirect]);
 
   async function submit(e: React.FormEvent) {
@@ -68,7 +75,11 @@ function AuthPage() {
   async function google() {
     sessionStorage.setItem("post-auth", safePath(redirect));
     const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (r.error) { toast.error("Google sign-in failed"); return; }
+    if (r.error) {
+      reportOauthFailure({ data: { provider: "google" } }).catch(() => {});
+      toast.error("Google sign-in failed");
+      return;
+    }
     if (r.redirected) return;
     nav({ to: safePath(redirect) });
   }
