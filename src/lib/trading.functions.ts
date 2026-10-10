@@ -5,12 +5,17 @@ import { fetchStock } from "./market.server";
 import { currencyOf, fxRates } from "./scanner.server";
 import { runBotForUser } from "./bot.server";
 import { runBacktest } from "./backtest.server";
+import { claimOrderKey, logEvent, safeError } from "./security.server";
 
 export const placeOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ symbol: z.string().min(1).max(15), side: z.enum(["buy", "sell"]), amountUsd: z.number().positive().max(10_000_000).optional(), qty: z.number().positive().optional() }).parse(d))
+  .inputValidator((d) => z.object({ symbol: z.string().min(1).max(15), side: z.enum(["buy", "sell"]), amountUsd: z.number().positive().max(10_000_000).optional(), qty: z.number().positive().optional(), clientKey: z.string().uuid().optional() }).parse(d))
   .handler(async ({ data, context }) => {
     try {
+      if (data.clientKey && !(await claimOrderKey(context.userId, data.clientKey))) {
+        await logEvent(context.userId, "duplicate_order_blocked", { symbol: data.symbol, side: data.side });
+        return { ok: false, error: "This order was already submitted" };
+      }
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const st = await fetchStock(data.symbol);
       const fx = await fxRates();
@@ -20,10 +25,10 @@ export const placeOrder = createServerFn({ method: "POST" })
       const { error } = await supabaseAdmin.rpc("execute_paper_trade", {
         _user: context.userId, _symbol: st.symbol, _side: data.side, _qty: qty, _price: px, _source: "manual", _reason: "Manual order",
       });
-      if (error) return { ok: false, error: error.message };
+      if (error) return { ok: false, error: safeError(error, "Order failed") };
       return { ok: true, error: null, qty, price: px };
     } catch (e) {
-      return { ok: false, error: e instanceof Error ? e.message : "Order failed" };
+      return { ok: false, error: safeError(e, "Order failed") };
     }
   });
 
@@ -48,7 +53,8 @@ export const saveBotSettings = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("bot_settings").upsert({ user_id: context.userId, ...data, updated_at: new Date().toISOString() });
-    if (error) return { ok: false, error: error.message };
+    if (error) return { ok: false, error: safeError(error, "Could not save settings") };
+    await logEvent(context.userId, "autopilot_settings_changed", { enabled: data.enabled, max_trade_usd: data.max_trade_usd });
     await supabaseAdmin.from("bot_events").insert({ user_id: context.userId, kind: "settings", message: `Settings saved — autopilot ${data.enabled ? "ON" : "OFF"}` });
     return { ok: true, error: null };
   });
@@ -58,6 +64,7 @@ export const setEmergencyStop = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ stop: z.boolean() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await logEvent(context.userId, data.stop ? "emergency_stop_on" : "emergency_stop_off");
     await supabaseAdmin.from("bot_settings").upsert({ user_id: context.userId, emergency_stop: data.stop, updated_at: new Date().toISOString() });
     await supabaseAdmin.from("bot_events").insert({ user_id: context.userId, kind: data.stop ? "pause" : "resume", message: data.stop ? "EMERGENCY STOP — all new orders halted" : "Emergency stop released" });
     return { ok: true };
@@ -70,7 +77,7 @@ export const runBotNow = createServerFn({ method: "POST" })
       const r = await runBotForUser(context.userId);
       return { ok: true, error: null, ...r };
     } catch (e) {
-      return { ok: false, error: e instanceof Error ? e.message : "Run failed" };
+      return { ok: false, error: safeError(e, "Run failed") };
     }
   });
 
@@ -79,6 +86,7 @@ export const resetPaperAccount = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const u = context.userId;
+    await logEvent(u, "paper_account_reset");
     await supabaseAdmin.from("paper_positions").delete().eq("user_id", u);
     await supabaseAdmin.from("paper_trades").delete().eq("user_id", u);
     await supabaseAdmin.from("paper_accounts").upsert({ user_id: u, cash: 100000, starting_cash: 100000 });
@@ -99,17 +107,22 @@ export const backtest = createServerFn({ method: "POST" })
 
 export const getEmailStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => (await import("./email-panel.server")).emailStatus(context.supabase as never, context.userId));
+  .handler(async ({ context }) => denyLog(await (await import("./email-panel.server")).emailStatus(context.supabase as never, context.userId), context.userId, "view_gmail"));
 
 export const sendTestEmail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => (await import("./email-panel.server")).testEmail(context.supabase as never, context.userId));
+  .handler(async ({ context }) => denyLog(await (await import("./email-panel.server")).testEmail(context.supabase as never, context.userId), context.userId, "send_test_email"));
 
 export const getEmailPanel = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => (await import("./email-panel.server")).emailPanel(context.supabase as never, context.userId));
+  .handler(async ({ context }) => denyLog(await (await import("./email-panel.server")).emailPanel(context.supabase as never, context.userId), context.userId, "view_email_panel"));
 
 export const saveEmailSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ enabled: z.boolean(), min_score: z.number().int().min(60).max(100), max_sequences_per_day: z.number().int().min(1).max(20), stage_gap_minutes: z.number().int().min(30).max(1440) }).parse(d))
-  .handler(async ({ data, context }) => (await import("./email-panel.server")).saveSettings(context.supabase as never, context.userId, data));
+  .handler(async ({ data, context }) => denyLog(await (await import("./email-panel.server")).saveSettings(context.supabase as never, context.userId, data), context.userId, "save_email_settings"));
+
+async function denyLog<T extends { error?: string | null; owner?: boolean }>(r: T, userId: string, action: string): Promise<T> {
+  if (r.owner === false || r.error === "Only the account owner can manage email alerts") await logEvent(userId, "owner_check_denied", { action });
+  return r;
+}
