@@ -66,21 +66,21 @@ function Fonder() {
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr] [&>*]:min-w-0">
         <Card title={`Fondlista (${list.length})`}>
           <div className="overflow-x-auto">
             <table className="w-full font-mono text-xs">
-              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-4 py-2">Fond</th><th className="text-right">Kurs</th><th className="text-right">Idag</th><th className="text-right">1 år</th><th className="text-right">Avgift</th><th className="text-right">Risk</th><th className="px-4 text-right">Uppdaterad</th></tr></thead>
+              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-3 py-2 sm:px-4">Fond</th><th className="px-2 text-right">Kurs</th><th className="px-2 text-right">Idag</th><th className="px-2 text-right">1 år</th><th className="hidden px-2 text-right sm:table-cell">Avgift</th><th className="hidden px-2 text-right sm:table-cell">Risk</th><th className="hidden px-4 text-right md:table-cell">Uppdaterad</th></tr></thead>
               <tbody>
                 {list.map((x) => (
                   <tr key={x.symbol} onClick={() => setSel(x.symbol)} className={`cursor-pointer border-b border-border/50 hover:bg-accent/50 ${x.symbol === f?.symbol ? "bg-accent/60" : ""}`}>
-                    <td className="px-4 py-2"><div className="font-semibold">{x.symbol}</div><div className="font-sans text-[11px] text-muted-foreground">{x.category}</div></td>
-                    <td className="text-right">{usd(x.price)}</td>
-                    <td className={`text-right ${tone(x.changePct)}`}>{signed(x.changePct)}</td>
-                    <td className={`text-right ${tone(x.r1y)}`}>{signed(x.r1y, 1)}</td>
-                    <td className="text-right">{fmt(x.fee)} %</td>
-                    <td className="text-right">{x.risk ?? "—"}/7</td>
-                    <td className="px-4 text-right font-sans text-[11px] text-muted-foreground">
+                    <td className="px-3 py-2 sm:px-4"><div className="font-semibold">{x.symbol}</div><div className="font-sans text-[11px] text-muted-foreground">{x.category}</div><div className="font-sans text-[10px] text-muted-foreground sm:hidden">Avgift {fmt(x.fee)} % · Risk {x.risk ?? "—"}/7</div></td>
+                    <td className="whitespace-nowrap px-2 text-right">{usd(x.price)}</td>
+                    <td className={`whitespace-nowrap px-2 text-right ${tone(x.changePct)}`}>{signed(x.changePct)}</td>
+                    <td className={`whitespace-nowrap px-2 text-right ${tone(x.r1y)}`}>{signed(x.r1y, 1)}</td>
+                    <td className="hidden whitespace-nowrap px-2 text-right sm:table-cell">{fmt(x.fee)} %</td>
+                    <td className="hidden whitespace-nowrap px-2 text-right sm:table-cell">{x.risk ?? "—"}/7</td>
+                    <td className="hidden px-4 text-right font-sans text-[11px] text-muted-foreground md:table-cell">
                       {x.marketTime ? (<>{new Date(x.marketTime).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" })}<div className="text-[10px]">{fmtDelay(x.marketTime, x.fetchedAt)}</div></>) : "—"}
                     </td>
                   </tr>
