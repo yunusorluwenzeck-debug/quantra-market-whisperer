@@ -70,7 +70,7 @@ function Fonder() {
         <Card title={`Fondlista (${list.length})`}>
           <div className="overflow-x-auto">
             <table className="w-full font-mono text-xs">
-              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-4 py-2">Fond</th><th className="text-right">Kurs</th><th className="text-right">Idag</th><th className="text-right">1 år</th><th className="text-right">Avgift</th><th className="px-4 text-right">Risk</th></tr></thead>
+              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-4 py-2">Fond</th><th className="text-right">Kurs</th><th className="text-right">Idag</th><th className="text-right">1 år</th><th className="text-right">Avgift</th><th className="text-right">Risk</th><th className="px-4 text-right">Uppdaterad</th></tr></thead>
               <tbody>
                 {list.map((x) => (
                   <tr key={x.symbol} onClick={() => setSel(x.symbol)} className={`cursor-pointer border-b border-border/50 hover:bg-accent/50 ${x.symbol === f?.symbol ? "bg-accent/60" : ""}`}>
@@ -79,10 +79,13 @@ function Fonder() {
                     <td className={`text-right ${tone(x.changePct)}`}>{signed(x.changePct)}</td>
                     <td className={`text-right ${tone(x.r1y)}`}>{signed(x.r1y, 1)}</td>
                     <td className="text-right">{fmt(x.fee)} %</td>
-                    <td className="px-4 text-right">{x.risk ?? "—"}/7</td>
+                    <td className="text-right">{x.risk ?? "—"}/7</td>
+                    <td className="px-4 text-right font-sans text-[11px] text-muted-foreground">
+                      {x.marketTime ? (<>{new Date(x.marketTime).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" })}<div className="text-[10px]">{fmtDelay(x.marketTime, x.fetchedAt)}</div></>) : "—"}
+                    </td>
                   </tr>
                 ))}
-                {!list.length && <tr><td colSpan={6} className="p-4 font-sans text-sm text-muted-foreground">Inga fonder matchar.</td></tr>}
+                {!list.length && <tr><td colSpan={7} className="p-4 font-sans text-sm text-muted-foreground">Inga fonder matchar.</td></tr>}
               </tbody>
             </table>
           </div>
@@ -115,7 +118,9 @@ function Fonder() {
                     <div className="rounded-lg border border-border p-2"><div className="text-[10px] uppercase text-muted-foreground">Volatilitet</div>{fmt(f.vol, 1)} %</div>
                     <div className="rounded-lg border border-border p-2"><div className="text-[10px] uppercase text-muted-foreground">Risk</div>{f.risk ?? "—"}/7</div>
                   </div>
-                  <p className="text-[11px] text-muted-foreground">Kurs per {f.asOf ? new Date(f.asOf).toLocaleDateString("sv-SE") : "—"} (fördröjd). Risknivån är uppskattad från de senaste 60 dagarnas svängningar. Avgiften är senast kända från utgivaren — kontrollera alltid aktuell avgift. 10 000 kr i ett år kostar ungefär {fmt(100 * f.fee, 0)} kr i avgift.</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Kursen uppdaterades {f.marketTime ? new Date(f.marketTime).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" }) : "okänd tid"} — {fmtDelay(f.marketTime, f.fetchedAt)}. Hämtad från Yahoo Finance {new Date(f.fetchedAt).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" })}. Risknivån är uppskattad från de senaste 60 dagarnas svängningar. Avgiften är senast kända från utgivaren — kontrollera alltid aktuell avgift. 10 000 kr i ett år kostar ungefär {fmt(100 * f.fee, 0)} kr i avgift.
+                  </p>
                   <Link to="/stock/$symbol" params={{ symbol: f.symbol }} className="rounded-md bg-primary px-3 py-2 text-center text-sm font-semibold text-primary-foreground">Köp eller sälj virtuellt</Link>
                 </>
               )}
