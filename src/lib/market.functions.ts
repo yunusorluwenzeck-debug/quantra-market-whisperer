@@ -3,7 +3,7 @@ import { z } from "zod";
 import { fetchStock } from "./market.server";
 
 export const getStock = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ symbol: z.string() }).parse(d))
+  .inputValidator((d) => z.object({ symbol: z.string().regex(/^[A-Za-z0-9.\-^=]{1,15}$/) }).parse(d))
   .handler(async ({ data }) => {
     try {
       return { stock: await fetchStock(data.symbol), error: null };
@@ -13,7 +13,7 @@ export const getStock = createServerFn({ method: "GET" })
   });
 
 export const getQuotes = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ symbols: z.array(z.string()).max(20) }).parse(d))
+  .inputValidator((d) => z.object({ symbols: z.array(z.string().regex(/^[A-Za-z0-9.\-^=]{1,15}$/)).max(20) }).parse(d))
   .handler(async ({ data }) => {
     const out = await Promise.all(
       data.symbols.map(async (s) => {
