@@ -34,7 +34,7 @@ describe.each(["public_sign_in", "oauth_report"] as const)("public limits: %s", 
     const r = await run("1.1.1.1", action, L.perIp + 3);
     expect(r.slice(0, L.perIp).every(Boolean)).toBe(true);
     expect(r.slice(L.perIp).some(Boolean)).toBe(false);
-    expect(inserts.some((e) => e.kind === "public_rate_limited" && e.detail.scope === "visitor" && e.detail.endpoint === action)).toBe(true);
+    expect(inserts.some((e) => e.kind === "public_rate_limited" && e.detail["scope"] === "visitor" && e.detail["endpoint"] === action)).toBe(true);
   });
 
   it("other visitors still get through until the app-wide cap, then everyone is rejected", async () => {
@@ -42,6 +42,6 @@ describe.each(["public_sign_in", "oauth_report"] as const)("public limits: %s", 
     for (let v = 0; allowed < L.global; v++) allowed += (await run(`10.0.${v >> 8}.${v & 255}`, action, L.perIp)).filter(Boolean).length;
     expect(allowed).toBe(L.global);
     expect(await takePublicSlot("9.9.9.9", action, L.perIp, L.global)).toBe(false);
-    expect(inserts.some((e) => e.detail.scope === "app-wide" && e.detail.endpoint === action)).toBe(true);
+    expect(inserts.some((e) => e.detail["scope"] === "app-wide" && e.detail["endpoint"] === action)).toBe(true);
   });
 });
