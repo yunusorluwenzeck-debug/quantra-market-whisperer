@@ -67,3 +67,16 @@ export function careerLevel(c: CareerInput) {
   while (i + 1 < CAREER.length && CAREER[i + 1]!.reqs.every((r) => r.ok(c))) i++;
   return i;
 }
+
+/** Daily and weekly goals. Periods are Stockholm calendar days and ISO weeks (Mon–Sun). */
+export type PeriodicMission = { id: string; period: "daily" | "weekly"; title: string; desc: string; xp: number; quiz?: boolean };
+export const PERIODIC: PeriodicMission[] = [
+  { id: "quiz", period: "daily", title: "Dagens fråga", desc: "Svara rätt på dagens kunskapsfråga.", xp: 20, quiz: true },
+  { id: "trade", period: "daily", title: "Gör en genomtänkt affär", desc: "Gör minst en virtuell affär idag.", xp: 15 },
+  { id: "alert", period: "daily", title: "Bevaka en aktie", desc: "Sätt ett kurslarm idag.", xp: 10 },
+  { id: "spread", period: "weekly", title: "Sprid riskerna", desc: "Äg minst 3 olika innehav samtidigt.", xp: 50 },
+  { id: "fund", period: "weekly", title: "Fondsparare", desc: "Äg minst en fond i portföljen.", xp: 40 },
+  { id: "calm", period: "weekly", title: "Lugn och fin", desc: "Gör 1–10 affärer denna vecka — inte fler. Kvalitet före kvantitet.", xp: 40 },
+  { id: "quiz5", period: "weekly", title: "Plugghäst", desc: "Svara rätt på dagens fråga 3 dagar denna vecka.", xp: 60 },
+];
+export const isPeriodicCode = (code: string) => code.startsWith("d:") || code.startsWith("w:");
