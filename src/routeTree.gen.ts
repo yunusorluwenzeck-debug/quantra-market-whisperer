@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BacktestRouteImport } from './routes/backtest'
+import { Route as FonderRouteImport } from './routes/fonder'
 import { Route as ScreenerRouteImport } from './routes/screener'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
@@ -42,6 +43,11 @@ const AuthRoute = AuthRouteImport.update({
 const BacktestRoute = BacktestRouteImport.update({
   id: '/backtest',
   path: '/backtest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FonderRoute = FonderRouteImport.update({
+  id: '/fonder',
+  path: '/fonder',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScreenerRoute = ScreenerRouteImport.update({
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
+  '/fonder': typeof FonderRoute
   '/screener': typeof ScreenerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alerts': typeof AuthenticatedAlertsRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
+  '/fonder': typeof FonderRoute
   '/screener': typeof ScreenerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alerts': typeof AuthenticatedAlertsRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
+  '/fonder': typeof FonderRoute
   '/screener': typeof ScreenerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/backtest'
+    | '/fonder'
     | '/screener'
     | '/sitemap.xml'
     | '/alerts'
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/backtest'
+    | '/fonder'
     | '/screener'
     | '/sitemap.xml'
     | '/alerts'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/backtest'
+    | '/fonder'
     | '/screener'
     | '/sitemap.xml'
     | '/_authenticated/alerts'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   BacktestRoute: typeof BacktestRoute
+  FonderRoute: typeof FonderRoute
   ScreenerRoute: typeof ScreenerRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiAnalyzeRoute: typeof ApiAnalyzeRoute
@@ -243,6 +256,13 @@ declare module '@tanstack/react-router' {
       path: '/backtest'
       fullPath: '/backtest'
       preLoaderRoute: typeof BacktestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fonder': {
+      id: '/fonder'
+      path: '/fonder'
+      fullPath: '/fonder'
+      preLoaderRoute: typeof FonderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/screener': {
@@ -349,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   BacktestRoute: BacktestRoute,
+  FonderRoute: FonderRoute,
   ScreenerRoute: ScreenerRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiAnalyzeRoute: ApiAnalyzeRoute,
