@@ -21,7 +21,7 @@ run("password reset flow", () => {
     userId = created.data.user!.id;
 
     // Same link the reset email contains, pointing at our /reset-password page.
-    const link = await admin.auth.admin.generateLink({ type: "recovery", email, options: { redirectTo: "http://localhost:8080/reset-password" } });
+    const link = await admin.auth.admin.generateLink({ type: "recovery", email, options: { redirectTo: "https://quantra-market-whisperer.lovable.app/reset-password" } });
     expect(link.error).toBeNull();
     expect(link.data.properties?.redirect_to).toContain("/reset-password");
 
