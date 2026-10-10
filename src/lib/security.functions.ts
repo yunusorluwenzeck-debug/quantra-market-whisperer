@@ -22,22 +22,35 @@ export const recordSignIn = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-const emailInput = (d: unknown) => z.object({ email: z.string().trim().email().max(255) }).parse(d);
+const signInInput = (d: unknown) => z.object({ email: z.string().trim().email().max(255), password: z.string().min(1).max(200) }).parse(d);
 
-/** Public: checks whether password sign-in for this email is temporarily locked. */
-export const checkSignInLock = createServerFn({ method: "POST" })
-  .inputValidator(emailInput)
+/**
+ * Public: password sign-in performed on the server, so failed attempts are only recorded when the
+ * password check genuinely fails (callers can no longer fake failures or probe lock status separately).
+ */
+export const passwordSignIn = createServerFn({ method: "POST" })
+  .inputValidator(signInInput)
   .handler(async ({ data }) => {
     const g = await import("./signin-guard.server");
-    return { lockedUntil: await g.lockedUntil(await g.hashEmail(data.email)) };
-  });
-
-/** Public: records a failed password attempt; may lock the account temporarily and notify the owner. */
-export const reportFailedSignIn = createServerFn({ method: "POST" })
-  .inputValidator(emailInput)
-  .handler(async ({ data }) => {
-    const g = await import("./signin-guard.server");
-    return g.recordFailure(await g.hashEmail(data.email), await country());
+    const hash = await g.hashEmail(data.email);
+    const LOCKED = "Too many failed attempts. Password sign-in for this account is paused for a while — try again later.";
+    if (await g.lockedUntil(hash)) return { session: null, error: LOCKED };
+    const { createClient } = await import("@supabase/supabase-js");
+    const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+    const sb = createClient(process.env["SUPABASE_URL"]!, key, {
+      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+      global: { fetch: (input, init) => { const h = new Headers(init?.headers); if (h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization"); h.set("apikey", key); return fetch(input, { ...init, headers: h }); } },
+    });
+    const { data: res, error } = await sb.auth.signInWithPassword({ email: data.email, password: data.password });
+    if (error || !res.session) {
+      if (error && /invalid login/i.test(error.message)) {
+        const r = await g.recordFailure(hash, await country());
+        if (r.locked) return { session: null, error: LOCKED };
+        return { session: null, error: "Invalid email or password" };
+      }
+      return { session: null, error: error?.message ?? "Sign-in failed" };
+    }
+    return { session: { access_token: res.session.access_token, refresh_token: res.session.refresh_token }, error: null };
   });
 
 /** Public: records a failed OAuth (e.g. Google) sign-in attempt; alerts the owner on repeats. */
