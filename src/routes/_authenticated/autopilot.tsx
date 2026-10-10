@@ -9,6 +9,7 @@ import { Card } from "@/components/AppShell";
 import { EmailAlerts } from "@/components/EmailAlerts";
 
 export const Route = createFileRoute("/_authenticated/autopilot")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "AI Autopilot — automated paper trading | Quantra" },

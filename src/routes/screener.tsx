@@ -19,6 +19,7 @@ const search = z.object({
 });
 
 export const Route = createFileRoute("/screener")({
+  staticData: { sitemap: true },
   validateSearch: search,
   head: () => ({
     meta: [

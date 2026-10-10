@@ -7,6 +7,7 @@ import { Card } from "@/components/AppShell";
 import { ROW_COLS, StockTable, type Row } from "@/components/StockTable";
 
 export const Route = createFileRoute("/_authenticated/lists")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "My stock lists | Quantra" },

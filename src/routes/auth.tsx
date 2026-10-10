@@ -8,6 +8,7 @@ import { lovable } from "@/integrations/lovable/index";
 const safePath = (p?: string) => (p && p.startsWith("/") && !p.startsWith("//") ? p : "/portfolio");
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   validateSearch: z.object({ redirect: z.string().optional() }),
   head: () => ({
     meta: [

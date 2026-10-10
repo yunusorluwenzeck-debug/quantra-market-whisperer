@@ -8,6 +8,7 @@ import { Card } from "@/components/AppShell";
 import { fmt, signalClass, signed, tone, usd } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/portfolio")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Paper portfolio | Quantra" },

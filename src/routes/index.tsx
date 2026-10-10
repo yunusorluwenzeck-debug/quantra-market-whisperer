@@ -7,6 +7,7 @@ import { ROW_COLS, StockTable, type Row } from "@/components/StockTable";
 import { fmt, signalClass } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Quantra — AI scanner for 4,000+ US & European stocks" },
