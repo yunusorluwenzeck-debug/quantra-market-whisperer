@@ -10,7 +10,7 @@
 - [ ] Real broker connection — blocked: user's broker choice + API keys
 
 - [ ] Payments: enable Stripe (paused — needs your go-ahead)
-- [ ] SEO review
+- [x] SEO review (sitemap added)
 - [ ] Funds & ETF analysis, alerts, autopilot (spec 11)
 - [ ] Avanza integration (spec 12) — needs verification of official API
-- [ ] E2E tests: two real accounts, email alert settings access
+- [ ] E2E tests: two real accounts — written; blocked: needs a second real account
