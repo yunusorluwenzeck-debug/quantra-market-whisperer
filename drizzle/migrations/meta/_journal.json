@@ -78,6 +78,13 @@
       "when": 1791636222879,
       "tag": "0010_cron_hook_token",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791639883142,
+      "tag": "0011_player_progress",
+      "breakpoints": true
     }
   ]
 }

@@ -1,3 +1,4 @@
+import { syncAchievements } from "./progress.server";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -27,6 +28,7 @@ export const placeOrder = createServerFn({ method: "POST" })
         _user: context.userId, _symbol: st.symbol, _side: data.side, _qty: qty, _price: px, _source: "manual", _reason: "Manual order",
       });
       if (error) return { ok: false, error: safeError(error, "Order failed") };
+      await syncAchievements(context.userId).catch(() => {});
       return { ok: true, error: null, qty, price: px };
     } catch (e) {
       return { ok: false, error: safeError(e, "Order failed") };

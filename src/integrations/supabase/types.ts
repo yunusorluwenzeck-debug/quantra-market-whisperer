@@ -338,6 +338,48 @@ export type Database = {
         }
         Relationships: []
       }
+      player_achievements: {
+        Row: {
+          code: string
+          earned_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          code: string
+          earned_at?: string
+          user_id: string
+          xp: number
+        }
+        Update: {
+          code?: string
+          earned_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
+      player_missions: {
+        Row: {
+          code: string
+          completed_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          code: string
+          completed_at?: string
+          user_id: string
+          xp: number
+        }
+        Update: {
+          code?: string
+          completed_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
       price_alerts: {
         Row: {
           created_at: string

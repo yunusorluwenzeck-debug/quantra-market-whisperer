@@ -26,3 +26,7 @@
 - [x] Tests: per-visitor + app-wide sign-in limits reject excess password attempts and Google-failure reports
 - [x] Security page: blocked sign-in requests grouped by endpoint and time period
 - [x] Swedish translation of all pages
+- [x] Save status (Sparar/Sparat/Offline/Misslyckades) + safe trade retries
+- [x] XP, levels, achievements, learning missions (Framsteg page)
+- [x] Password reset page + automated end-to-end test
+- [ ] Optional MFA — not started
