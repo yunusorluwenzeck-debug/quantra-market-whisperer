@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Home, LineChart, PieChart, Wallet, GraduationCap, Target, Trophy, Bot, History, ListChecks, Bell, Shield, Menu, X } from "lucide-react";
 import { SaveBadge } from "@/components/SaveBadge";
 import { MfaGate } from "@/components/Mfa";
+import { MissionNotifier, useClaimableMissions } from "@/components/MissionNotifier";
 
 const NAV = [
   { to: "/", label: "Hem", icon: Home },
@@ -49,6 +50,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     try { localStorage.setItem("theme", next ? "dark" : "light"); } catch { /* ignore */ }
   };
   const [more, setMore] = useState(false);
+  const claimable = useClaimableMissions();
   const navLink = (n: (typeof NAV)[number], onClick?: () => void) => (
     <Link key={n.to} to={n.to} onClick={onClick} activeOptions={{ exact: n.to === "/" }}
       className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
@@ -56,11 +58,13 @@ export function AppShell({ children }: { children: ReactNode }) {
       <n.icon className="h-4 w-4 shrink-0" />
       <span className="min-w-0 flex-1 truncate">{n.label}</span>
       {n.to === "/alerts" && !!alertCount && <span className="rounded bg-primary px-1.5 font-mono text-[10px] text-primary-foreground">{alertCount}</span>}
+      {n.to === "/progress" && !!claimable && <span className="rounded bg-primary px-1.5 font-mono text-[10px] text-primary-foreground">{claimable}</span>}
     </Link>
   );
   return (
     <div className="min-h-screen lg:pl-60">
       <MfaGate />
+      <MissionNotifier />
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-border bg-secondary lg:flex">
         <Link to="/" className="flex items-center gap-2 px-5 py-5">
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-xs font-extrabold text-primary-foreground">SL</span>
