@@ -89,6 +89,22 @@ function SecurityPage() {
             <p className="mt-2 text-xs text-muted-foreground">Your financial data is never sold, published or shared beyond this list.</p>
           </Card>
 
+          <Card title="Sign-in requests blocked by rate limits">
+            <div className="overflow-x-auto">
+              <table className="w-full font-mono text-xs">
+                <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr><th className="py-1">Endpoint</th><th>Period</th><th className="text-right">Per-visitor limit</th><th className="text-right">App-wide limit</th></tr></thead>
+                <tbody>
+                  {data.blocked.flatMap((b) => b.periods.map((p, i) => (
+                    <tr key={b.endpoint + p.label} className="border-t border-border/50">
+                      <td className="py-1">{i === 0 ? b.endpoint : ""}</td><td>{p.label}</td>
+                      <td className="text-right">{p.visitor}</td><td className="text-right">{p.appWide}</td>
+                    </tr>
+                  )))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
           <Card title="Recent security activity">
             {data.events.length === 0 ? <p className="text-sm text-muted-foreground">No events yet.</p> : (
               <ul className="grid gap-1 font-mono text-xs">

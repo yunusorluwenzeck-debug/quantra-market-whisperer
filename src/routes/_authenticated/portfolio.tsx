@@ -11,10 +11,10 @@ export const Route = createFileRoute("/_authenticated/portfolio")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Paper portfolio | Quantra" },
-      { name: "description", content: "Track your simulated holdings, cash, profit and loss and every trade." },
-      { property: "og:title", content: "Paper portfolio | Quantra" },
-      { property: "og:description", content: "Track your simulated holdings, cash, profit and loss and every trade." },
+      { title: "Portfölj | StockLab" },
+      { name: "description", content: "Följ dina virtuella innehav, kassa, vinst och förlust samt alla affärer." },
+      { property: "og:title", content: "Portfölj | StockLab" },
+      { property: "og:description", content: "Följ dina virtuella innehav, kassa, vinst och förlust samt alla affärer." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -53,24 +53,24 @@ function Portfolio() {
     <div className="grid gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Paper portfolio <span className="ml-2 rounded border border-border px-2 py-0.5 align-middle font-mono text-[10px] text-muted-foreground">SIMULATED</span></h1>
-          <p className="text-sm text-muted-foreground">Virtual money only. Prices in USD (European stocks converted at live exchange rates).</p>
+          <h1 className="text-2xl font-bold">Portfölj <span className="ml-2 rounded border border-border px-2 py-0.5 align-middle font-mono text-[10px] text-muted-foreground">SIMULERAD</span></h1>
+          <p className="text-sm text-muted-foreground">Endast virtuella pengar. Belopp visas i kronor, omräknade med aktuell växelkurs.</p>
         </div>
-        <button onClick={async () => { if (!confirm("Reset to $100,000 and clear all positions and trade history?")) return; const r = await reset(); if (!r.ok) { toast.error("error" in r ? r.error : "Reset failed"); return; } qc.invalidateQueries(); toast.success("Account reset"); }} className="rounded-md border border-border px-3 py-1.5 font-mono text-xs hover:bg-accent">Reset account</button>
+        <button onClick={async () => { if (!confirm("Återställ kontot och radera alla innehav och affärer?")) return; const r = await reset(); if (!r.ok) { toast.error("error" in r ? r.error : "Återställningen misslyckades"); return; } qc.invalidateQueries(); toast.success("Kontot är återställt"); }} className="rounded-md border border-border px-3 py-1.5 font-mono text-xs hover:bg-accent">Återställ konto</button>
       </div>
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-5">
-        {[["Equity", usd(equity), null], ["Total return", signed((equity / start - 1) * 100), equity - start], ["Cash", usd(cash), null], ["Unrealized P&L", usd(unreal), unreal], ["Realized P&L", usd(realized), realized]].map(([k, v, n]) => (
+        {[["Totalt värde", usd(equity), null], ["Total avkastning", signed((equity / start - 1) * 100), equity - start], ["Kassa", usd(cash), null], ["Orealiserat", usd(unreal), unreal], ["Realiserat", usd(realized), realized]].map(([k, v, n]) => (
           <div key={k as string} className="bg-card p-4">
             <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{k}</div>
             <div className={`mt-1 font-mono text-xl font-semibold ${n == null ? "" : tone(n as number)}`}>{v}</div>
           </div>
         ))}
       </div>
-      <Card title={`Holdings (${rows.length})`}>
-        {!rows.length ? <p className="p-4 text-sm text-muted-foreground">No positions yet. Open a stock to buy, or turn on <Link to="/autopilot" className="text-primary underline">Autopilot</Link>.</p> : (
+      <Card title={`Innehav (${rows.length})`}>
+        {!rows.length ? <p className="p-4 text-sm text-muted-foreground">Inga innehav än. Öppna en aktie för att köpa, eller slå på <Link to="/autopilot" className="text-primary underline">Autopilot</Link>.</p> : (
           <div className="overflow-x-auto">
             <table className="w-full font-mono text-xs">
-              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-4 py-2">Stock</th><th className="text-right">Qty</th><th className="text-right">Avg cost</th><th className="text-right">Price</th><th className="text-right">Value</th><th className="text-right">P&L</th><th className="px-4">Signal</th></tr></thead>
+              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-4 py-2">Aktie</th><th className="text-right">Antal</th><th className="text-right">Snittkurs</th><th className="text-right">Kurs</th><th className="text-right">Värde</th><th className="text-right">Resultat</th><th className="px-4">Signal</th></tr></thead>
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.symbol} className="border-b border-border/50">
@@ -85,19 +85,19 @@ function Portfolio() {
           </div>
         )}
       </Card>
-      <Card title="Trade history (simulated)">
-        {!data?.trades.length ? <p className="p-4 text-sm text-muted-foreground">No trades yet.</p> : (
+      <Card title="Transaktioner (simulerade)">
+        {!data?.trades.length ? <p className="p-4 text-sm text-muted-foreground">Inga affärer än.</p> : (
           <div className="overflow-x-auto">
             <table className="w-full font-mono text-xs">
-              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-4 py-2">Time</th><th>Side</th><th>Stock</th><th className="text-right">Qty</th><th className="text-right">Price</th><th className="text-right">Realized</th><th className="px-4">By / reason</th></tr></thead>
+              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-4 py-2">Tid</th><th>Typ</th><th>Aktie</th><th className="text-right">Antal</th><th className="text-right">Kurs</th><th className="text-right">Realiserat</th><th className="px-4">Av / orsak</th></tr></thead>
               <tbody>
                 {data.trades.map((t) => (
                   <tr key={t.id} className="border-b border-border/50 align-top">
-                    <td className="whitespace-nowrap px-4 py-2">{new Date(t.created_at).toLocaleString()}</td>
+                    <td className="whitespace-nowrap px-4 py-2">{new Date(t.created_at).toLocaleString("sv-SE")}</td>
                     <td className={t.side === "buy" ? "text-bull" : "text-bear"}>{t.side.toUpperCase()}</td>
                     <td>{t.symbol}</td><td className="text-right">{fmt(t.qty, 4)}</td><td className="text-right">{usd(t.price)}</td>
                     <td className={`text-right ${tone(t.realized_pnl)}`}>{t.realized_pnl == null ? "—" : usd(t.realized_pnl)}</td>
-                    <td className="max-w-md px-4 font-sans text-[11px] text-muted-foreground"><span className="font-mono uppercase text-foreground">{t.source === "bot" ? "AI" : "You"}</span> · {t.reason}</td>
+                    <td className="max-w-md px-4 font-sans text-[11px] text-muted-foreground"><span className="font-mono uppercase text-foreground">{t.source === "bot" ? "AI" : "Du"}</span> · {t.reason}</td>
                   </tr>
                 ))}
               </tbody>

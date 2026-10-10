@@ -60,6 +60,12 @@ export async function takeRateSlot(userId: string, action: keyof typeof LIMITS) 
  * Rate limit for public (signed-out) endpoints, keyed by a hash of the caller's IP plus a global cap,
  * so anonymous callers cannot create unlimited records or alerts.
  */
+/** Caps for public sign-in endpoints: per visitor (IP) and app-wide, per hour. */
+export const PUBLIC_LIMITS = {
+  public_sign_in: { perIp: 30, global: 1000 },
+  oauth_report: { perIp: 10, global: 100 },
+} as const;
+
 export async function takePublicSlot(ip: string | null, action: string, perIp: number, global: number) {
   const toUuid = async (v: string) => {
     const h = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v))), (b) => b.toString(16).padStart(2, "0")).join("");
@@ -68,9 +74,10 @@ export async function takePublicSlot(ip: string | null, action: string, perIp: n
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const g = await supabaseAdmin.rpc("take_rate_slot", { _user: await toUuid("global"), _action: action, _max: global, _window_sec: 3600 });
-    if (g.data === false) return false;
+    if (g.data === false) { await logEvent(null, "public_rate_limited", { endpoint: action, scope: "app-wide" }); return false; }
     const r = await supabaseAdmin.rpc("take_rate_slot", { _user: await toUuid(`ip:${ip ?? "unknown"}`), _action: action, _max: perIp, _window_sec: 3600 });
-    return r.data !== false;
+    if (r.data === false) { await logEvent(null, "public_rate_limited", { endpoint: action, scope: "visitor" }); return false; }
+    return true;
   } catch (e) {
     console.error("public rate limit failed", e instanceof Error ? e.message : e);
     return true;

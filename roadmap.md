@@ -22,3 +22,6 @@
 - [x] Suspicious-activity monitoring for failed Google sign-ins (log + owner email + security page)
 
 - [x] Security spec pass: rate-limit public sign-in/alert endpoints, verify all endpoints reject unauthenticated calls
+- [x] StockLab rebrand: Swedish, SEK display, navy/emerald, light/dark (other pages still partly English)
+- [x] Tests: per-visitor + app-wide sign-in limits reject excess password attempts and Google-failure reports
+- [x] Security page: blocked sign-in requests grouped by endpoint and time period

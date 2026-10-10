@@ -10,9 +10,9 @@ export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "Quantra — AI scanner for 4,000+ US & European stocks" },
+      { title: "StockLab — Översikt över 4 000+ aktier" },
       { name: "description", content: "Continuously scores thousands of US and European stocks, writes AI reports on top picks, and runs a paper-trading autopilot." },
-      { property: "og:title", content: "Quantra — AI scanner for 4,000+ US & European stocks" },
+      { property: "og:title", content: "StockLab — Översikt över 4 000+ aktier" },
       { property: "og:description", content: "Continuously scores thousands of US and European stocks, writes AI reports on top picks, and runs a paper-trading autopilot." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

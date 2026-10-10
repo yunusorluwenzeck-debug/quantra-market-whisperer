@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isOwner, NOT_OWNER } from "./owner";
-import { logEvent, takePublicSlot } from "./security.server";
+import { logEvent, takePublicSlot, PUBLIC_LIMITS } from "./security.server";
 
 async function clientIp() {
   const { getRequestHeader } = await import("@tanstack/react-start/server");
@@ -36,7 +36,7 @@ const signInInput = (d: unknown) => z.object({ email: z.string().trim().email().
 export const passwordSignIn = createServerFn({ method: "POST" })
   .inputValidator(signInInput)
   .handler(async ({ data }) => {
-    if (!(await takePublicSlot(await clientIp(), "public_sign_in", 30, 1000))) return { session: null, error: "Too many sign-in attempts — please wait a while and try again" };
+    if (!(await takePublicSlot(await clientIp(), "public_sign_in", PUBLIC_LIMITS.public_sign_in.perIp, PUBLIC_LIMITS.public_sign_in.global))) return { session: null, error: "Too many sign-in attempts — please wait a while and try again" };
     const g = await import("./signin-guard.server");
     const hash = await g.hashEmail(data.email);
     const LOCKED = "Too many failed attempts. Password sign-in for this account is paused for a while — try again later.";
@@ -64,7 +64,7 @@ export const reportOauthFailure = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ provider: z.enum(["google", "apple", "microsoft"]) }).parse(d))
   .handler(async ({ data }) => {
     // Unverified client report: capped per visitor and globally; never emails anyone.
-    if (!(await takePublicSlot(await clientIp(), "oauth_report", 10, 100))) return { suspicious: false, count: 0 };
+    if (!(await takePublicSlot(await clientIp(), "oauth_report", PUBLIC_LIMITS.oauth_report.perIp, PUBLIC_LIMITS.oauth_report.global))) return { suspicious: false, count: 0 };
     const g = await import("./oauth-guard.server");
     return g.recordOauthFailure(data.provider, await country());
   });
@@ -128,12 +128,27 @@ export const getSecurityStatus = createServerFn({ method: "POST" })
     // 6. Things the app cannot verify itself — reported honestly
     checks.push({ id: "backups", label: "Database backups", status: "info", detail: "Automatic, encrypted backups are managed by Lovable Cloud. Restore drills cannot be run or verified from inside the app." });
     checks.push({ id: "secrets", label: "Secret keys kept off the browser", status: "info", detail: "Enforced by code structure (server-only modules). Not re-scanned on this page." });
-    checks.push({ id: "ratelimit", label: "Request rate limiting", status: "warn", detail: "Only background jobs are rate-limited. There is no per-user request throttling." });
+    checks.push({ id: "ratelimit", label: "Request rate limiting", status: "pass", detail: "Hourly per-user limits on trades, autopilot, settings, resets and test emails; per-visitor and app-wide limits on public sign-in endpoints." });
+
+    // 7. Sign-in requests blocked by rate limits, grouped by endpoint and period
+    const { data: rl } = await supabaseAdmin.from("security_events").select("detail,created_at").eq("kind", "public_rate_limited").gte("created_at", since).limit(5000);
+    const periods = [["Last hour", 3600_000], ["Last 24 hours", 86400_000], ["Last 7 days", 7 * 86400_000]] as const;
+    const blocked = (["public_sign_in", "oauth_report"] as const).map((endpoint) => {
+      const rows = (rl ?? []).filter((r) => (r.detail as { endpoint?: string } | null)?.endpoint === endpoint);
+      return {
+        endpoint: endpoint === "public_sign_in" ? "Password sign-in" : "Google failure reports",
+        periods: periods.map(([label, ms]) => {
+          const inP = rows.filter((r) => Date.now() - new Date(r.created_at).getTime() <= ms);
+          const visitor = inP.filter((r) => (r.detail as { scope?: string }).scope === "visitor").length;
+          return { label, visitor, appWide: inP.length - visitor };
+        }),
+      };
+    });
 
     const criticalFail = checks.some((c) => c.critical && c.status === "fail");
     const { data: events } = await supabaseAdmin.from("security_events").select("kind,detail,created_at,user_id").order("created_at", { ascending: false }).limit(30);
     return {
-      owner: true as const, ranAt, checks, events: events ?? [],
+      owner: true as const, ranAt, checks, events: events ?? [], blocked,
       liveTrading: { allowed: false, reason: criticalFail ? "Blocked: critical security checks are failing" : "Not available: real-money trading is not implemented" },
       providers: [
         { name: "Yahoo Finance", gets: "Ticker symbols only (to fetch public prices)" },
