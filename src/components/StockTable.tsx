@@ -28,16 +28,16 @@ export function StockTable({ rows, compactMode = false }: { rows: Row[]; compact
       <table className="w-full font-mono text-xs">
         <thead className="text-left text-[10px] uppercase tracking-widest text-muted-foreground">
           <tr className="border-b border-border">
-            <th className="px-4 py-2">Stock</th>
-            {!compactMode && <th className="px-2 py-2">Mkt</th>}
-            <th className="px-2 py-2 text-right">Price</th>
-            <th className="px-2 py-2 text-right">Day</th>
+            <th className="px-4 py-2">Aktie</th>
+            {!compactMode && <th className="px-2 py-2">Marknad</th>}
+            <th className="px-2 py-2 text-right">Kurs</th>
+            <th className="px-2 py-2 text-right">Idag</th>
             {!compactMode && <th className="px-2 py-2 text-right">1M</th>}
             {!compactMode && <th className="px-2 py-2 text-right">3M</th>}
             {!compactMode && <th className="px-2 py-2 text-right">RSI</th>}
-            {!compactMode && <th className="px-2 py-2 text-right">Cap $</th>}
+            {!compactMode && <th className="px-2 py-2 text-right">Börsvärde</th>}
             <th className="px-2 py-2">30d</th>
-            <th className="px-2 py-2 text-right">Score</th>
+            <th className="px-2 py-2 text-right">Poäng</th>
             <th className="px-4 py-2">Signal</th>
           </tr>
         </thead>

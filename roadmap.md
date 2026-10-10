@@ -11,7 +11,7 @@
 
 - [ ] Payments: enable Stripe (paused — needs your go-ahead)
 - [x] SEO review (sitemap added)
-- [ ] Funds & ETF analysis, alerts, autopilot (spec 11)
+- [~] Funds & ETF analysis (Fonder page with 12 ETFs done; full discovery open), alerts, autopilot (spec 11)
 - [ ] Avanza integration (spec 12) — needs verification of official API
 - [ ] E2E tests: two real accounts — written; blocked: needs a second real account
 - [x] Security & privacy hardening (spec 13)
@@ -25,3 +25,4 @@
 - [x] StockLab rebrand: Swedish, SEK display, navy/emerald, light/dark (other pages still partly English)
 - [x] Tests: per-visitor + app-wide sign-in limits reject excess password attempts and Google-failure reports
 - [x] Security page: blocked sign-in requests grouped by endpoint and time period
+- [x] Swedish translation of all pages

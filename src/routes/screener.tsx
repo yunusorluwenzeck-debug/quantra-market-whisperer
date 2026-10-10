@@ -23,10 +23,10 @@ export const Route = createFileRoute("/screener")({
   validateSearch: search,
   head: () => ({
     meta: [
-      { title: "Stock screener — 4,000+ US & EU stocks | Quantra" },
-      { name: "description", content: "Filter and rank thousands of US and European stocks by quant score, momentum, RSI and market cap." },
-      { property: "og:title", content: "Stock screener — 4,000+ US & EU stocks | Quantra" },
-      { property: "og:description", content: "Filter and rank thousands of US and European stocks by quant score, momentum, RSI and market cap." },
+      { title: "Aktier — 4 000+ amerikanska och europeiska aktier | StockLab" },
+      { name: "description", content: "Filtrera och rangordna tusentals aktier efter poäng, momentum, RSI och börsvärde." },
+      { property: "og:title", content: "Aktier — 4 000+ amerikanska och europeiska aktier | StockLab" },
+      { property: "og:description", content: "Filtrera och rangordna tusentals aktier efter poäng, momentum, RSI och börsvärde." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -65,35 +65,35 @@ function Screener() {
   return (
     <div className="grid gap-4">
       <div>
-        <h1 className="text-2xl font-bold">Screener</h1>
+        <h1 className="text-2xl font-bold">Aktier</h1>
         <p className="text-sm text-muted-foreground">{fmt(data?.count, 0)} matching companies across US and European exchanges.</p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or ticker" className={`${sel} w-56`} />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Sök namn eller ticker" className={`${sel} w-56`} />
         <select className={sel} value={s.region ?? "ALL"} onChange={(e) => set({ region: e.target.value as "ALL" })}>
-          <option value="ALL">All markets</option><option value="US">United States</option><option value="EU">Europe</option>
+          <option value="ALL">Alla marknader</option><option value="US">USA</option><option value="EU">Europa</option>
         </select>
         <select className={sel} value={s.signal ?? ""} onChange={(e) => set({ signal: e.target.value || undefined })}>
-          <option value="">Any signal</option>{SIGNALS.map((x) => <option key={x}>{x}</option>)}
+          <option value="">Alla signaler</option>{SIGNALS.map((x) => <option key={x}>{x}</option>)}
         </select>
         <select className={sel} value={s.minScore ?? 0} onChange={(e) => set({ minScore: Number(e.target.value) || undefined })}>
-          <option value={0}>Any score</option>{[50, 60, 70, 80, 90].map((x) => <option key={x} value={x}>Score ≥ {x}</option>)}
+          <option value={0}>Alla poäng</option>{[50, 60, 70, 80, 90].map((x) => <option key={x} value={x}>Score ≥ {x}</option>)}
         </select>
         <select className={sel} value={s.minCap ?? 0} onChange={(e) => set({ minCap: Number(e.target.value) || undefined })}>
-          <option value={0}>Any size</option><option value={1e9}>≥ $1B cap</option><option value={1e10}>≥ $10B cap</option><option value={1e11}>≥ $100B cap</option>
+          <option value={0}>Alla storlekar</option><option value={1e9}>≥ $1B börsvärde</option><option value={1e10}>≥ $10B börsvärde</option><option value={1e11}>≥ $100B börsvärde</option>
         </select>
         <select className={sel} value={`${sort}:${dir}`} onChange={(e) => { const [a, b] = e.target.value.split(":"); set({ sort: a as "score", dir: b as "desc" }); }}>
-          <option value="score:desc">Top score</option><option value="score:asc">Lowest score</option>
-          <option value="change_pct:desc">Day gainers</option><option value="change_pct:asc">Day losers</option>
-          <option value="mom_1m:desc">1M momentum</option><option value="mom_3m:desc">3M momentum</option><option value="market_cap:desc">Largest</option>
+          <option value="score:desc">Högst poäng</option><option value="score:asc">Lägst poäng</option>
+          <option value="change_pct:desc">Dagens vinnare</option><option value="change_pct:asc">Dagens förlorare</option>
+          <option value="mom_1m:desc">Momentum 1 mån</option><option value="mom_3m:desc">Momentum 3 mån</option><option value="market_cap:desc">Störst</option>
         </select>
-        {isFetching && <span className="self-center font-mono text-xs text-muted-foreground">loading…</span>}
+        {isFetching && <span className="self-center font-mono text-xs text-muted-foreground">laddar…</span>}
       </div>
       <Card><StockTable rows={data?.rows ?? []} /></Card>
       <div className="flex items-center justify-center gap-3 font-mono text-xs">
-        <button disabled={page <= 0} onClick={() => nav({ search: (p) => ({ ...p, page: page - 1 }) })} className="rounded border border-border px-3 py-1.5 disabled:opacity-40">Prev</button>
+        <button disabled={page <= 0} onClick={() => nav({ search: (p) => ({ ...p, page: page - 1 }) })} className="rounded border border-border px-3 py-1.5 disabled:opacity-40">Föregående</button>
         <span>Page {page + 1} / {Math.max(1, pages)}</span>
-        <button disabled={page + 1 >= pages} onClick={() => nav({ search: (p) => ({ ...p, page: page + 1 }) })} className="rounded border border-border px-3 py-1.5 disabled:opacity-40">Next</button>
+        <button disabled={page + 1 >= pages} onClick={() => nav({ search: (p) => ({ ...p, page: page + 1 }) })} className="rounded border border-border px-3 py-1.5 disabled:opacity-40">Nästa</button>
       </div>
     </div>
   );

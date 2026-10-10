@@ -54,7 +54,7 @@ export const passwordSignIn = createServerFn({ method: "POST" })
         if (r.locked) return { session: null, error: LOCKED };
         return { session: null, error: "Invalid email or password" };
       }
-      return { session: null, error: error?.message ?? "Sign-in failed" };
+      return { session: null, error: error?.message ?? "Inloggningen misslyckades" };
     }
     return { session: { access_token: res.session.access_token, refresh_token: res.session.refresh_token }, error: null };
   });
@@ -114,7 +114,7 @@ export const getSecurityStatus = createServerFn({ method: "POST" })
     const { data: jobs } = await supabaseAdmin.from("job_runs").select("job,last_run");
     const stale = (jobs ?? []).filter((j) => Date.now() - new Date(j.last_run).getTime() > 2 * 3600_000).map((j) => j.job);
     checks.push({ id: "jobs", label: "Background jobs running", status: stale.length ? "warn" : "pass",
-      detail: stale.length ? `No run in 2h: ${stale.join(", ")}` : (jobs ?? []).map((j) => `${j.job}: ${new Date(j.last_run).toLocaleString("en-GB")}`).join(" · ") || "No runs recorded" });
+      detail: stale.length ? `No run in 2h: ${stale.join(", ")}` : (jobs ?? []).map((j) => `${j.job}: ${new Date(j.last_run).toLocaleString("sv-SE")}`).join(" · ") || "No runs recorded" });
 
     // 5. Suspicious activity in the last 7 days
     const since = new Date(Date.now() - 7 * 86400_000).toISOString();
@@ -130,13 +130,13 @@ export const getSecurityStatus = createServerFn({ method: "POST" })
     checks.push({ id: "secrets", label: "Secret keys kept off the browser", status: "info", detail: "Enforced by code structure (server-only modules). Not re-scanned on this page." });
     checks.push({ id: "ratelimit", label: "Request rate limiting", status: "pass", detail: "Hourly per-user limits on trades, autopilot, settings, resets and test emails; per-visitor and app-wide limits on public sign-in endpoints." });
 
-    // 7. Sign-in requests blocked by rate limits, grouped by endpoint and period
+    // 7. Inloggningsförsök stoppade av gränser, grouped by endpoint and period
     const { data: rl } = await supabaseAdmin.from("security_events").select("detail,created_at").eq("kind", "public_rate_limited").gte("created_at", since).limit(5000);
-    const periods = [["Last hour", 3600_000], ["Last 24 hours", 86400_000], ["Last 7 days", 7 * 86400_000]] as const;
+    const periods = [["Senaste timmen", 3600_000], ["Senaste dygnet", 86400_000], ["Senaste 7 dagarna", 7 * 86400_000]] as const;
     const blocked = (["public_sign_in", "oauth_report"] as const).map((endpoint) => {
       const rows = (rl ?? []).filter((r) => (r.detail as { endpoint?: string } | null)?.endpoint === endpoint);
       return {
-        endpoint: endpoint === "public_sign_in" ? "Password sign-in" : "Google failure reports",
+        endpoint: endpoint === "public_sign_in" ? "Lösenordsinloggning" : "Misslyckade Google-inloggningar",
         periods: periods.map(([label, ms]) => {
           const inP = rows.filter((r) => Date.now() - new Date(r.created_at).getTime() <= ms);
           const visitor = inP.filter((r) => (r.detail as { scope?: string }).scope === "visitor").length;

@@ -9,10 +9,10 @@ export const Route = createFileRoute("/_authenticated/alerts")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Price alerts | Quantra" },
-      { name: "description", content: "Get notified when a stock crosses your target price." },
-      { property: "og:title", content: "Price alerts | Quantra" },
-      { property: "og:description", content: "Get notified when a stock crosses your target price." },
+      { title: "Kurslarm | StockLab" },
+      { name: "description", content: "Få besked när en aktie når ditt målpris." },
+      { property: "og:title", content: "Kurslarm | StockLab" },
+      { property: "og:description", content: "Få besked när en aktie når ditt målpris." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -36,31 +36,31 @@ function Alerts() {
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="text-2xl font-bold">Price alerts</h1>
-        <p className="text-sm text-muted-foreground">Set alerts from any stock page. Prices are checked about every 15 minutes, in the stock's own currency.</p>
+        <h1 className="text-2xl font-bold">Kurslarm</h1>
+        <p className="text-sm text-muted-foreground">Sätt larm från en aktiesida. Kurserna kontrolleras ungefär var 15:e minut, i aktiens egen valuta.</p>
       </div>
-      <Card title={`Triggered (${fired.length})`}>
-        {!fired.length ? <p className="p-4 text-sm text-muted-foreground">Nothing triggered yet.</p> : (
+      <Card title={`Utlösta (${fired.length})`}>
+        {!fired.length ? <p className="p-4 text-sm text-muted-foreground">Inga larm har utlösts än.</p> : (
           <ul className="divide-y divide-border">
             {fired.map((a) => (
               <li key={a.id} className={`flex items-center gap-4 px-4 py-3 font-mono text-sm ${!a.seen ? "bg-primary/10" : ""}`}>
                 <Link to="/stock/$symbol" params={{ symbol: a.symbol }} className="font-semibold hover:text-primary">{a.symbol}</Link>
                 <span>went {a.direction} {fmt(a.target)} — hit {fmt(a.triggered_price)}</span>
                 <span className="text-xs text-muted-foreground">{new Date(a.triggered_at!).toLocaleString()}</span>
-                <button onClick={() => del(a.id)} className="ml-auto text-xs text-muted-foreground hover:text-bear">Dismiss</button>
+                <button onClick={() => del(a.id)} className="ml-auto text-xs text-muted-foreground hover:text-bear">Stäng</button>
               </li>
             ))}
           </ul>
         )}
       </Card>
-      <Card title={`Watching (${open.length})`}>
-        {!open.length ? <p className="p-4 text-sm text-muted-foreground">No active alerts. Open a stock and set a target price.</p> : (
+      <Card title={`Bevakas (${open.length})`}>
+        {!open.length ? <p className="p-4 text-sm text-muted-foreground">Inga aktiva larm. Öppna en aktie och sätt ett målpris.</p> : (
           <ul className="divide-y divide-border">
             {open.map((a) => (
               <li key={a.id} className="flex items-center gap-4 px-4 py-3 font-mono text-sm">
                 <Link to="/stock/$symbol" params={{ symbol: a.symbol }} className="font-semibold hover:text-primary">{a.symbol}</Link>
                 <span>{a.direction} {fmt(a.target)}</span>
-                <button onClick={() => del(a.id)} className="ml-auto text-xs text-muted-foreground hover:text-bear">Remove</button>
+                <button onClick={() => del(a.id)} className="ml-auto text-xs text-muted-foreground hover:text-bear">Ta bort</button>
               </li>
             ))}
           </ul>
