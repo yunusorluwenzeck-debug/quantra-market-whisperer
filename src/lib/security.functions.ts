@@ -9,11 +9,35 @@ const PRIVATE_TABLES = [...USER_TABLES, "email_settings", "opportunities", "user
 
 type Check = { id: string; label: string; status: "pass" | "fail" | "warn" | "info"; detail: string; critical?: boolean };
 
+async function country() {
+  const { getRequestHeader } = await import("@tanstack/react-start/server");
+  return getRequestHeader("cf-ipcountry") ?? null;
+}
+
 export const recordSignIn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await logEvent(context.userId, "sign_in");
+    const { recordSuccess } = await import("./signin-guard.server");
+    await recordSuccess(context.userId, await country());
     return { ok: true };
+  });
+
+const emailInput = (d: unknown) => z.object({ email: z.string().trim().email().max(255) }).parse(d);
+
+/** Public: checks whether password sign-in for this email is temporarily locked. */
+export const checkSignInLock = createServerFn({ method: "POST" })
+  .inputValidator(emailInput)
+  .handler(async ({ data }) => {
+    const g = await import("./signin-guard.server");
+    return { lockedUntil: await g.lockedUntil(await g.hashEmail(data.email)) };
+  });
+
+/** Public: records a failed password attempt; may lock the account temporarily and notify the owner. */
+export const reportFailedSignIn = createServerFn({ method: "POST" })
+  .inputValidator(emailInput)
+  .handler(async ({ data }) => {
+    const g = await import("./signin-guard.server");
+    return g.recordFailure(await g.hashEmail(data.email), await country());
   });
 
 export const getSecurityStatus = createServerFn({ method: "POST" })
