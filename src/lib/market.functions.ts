@@ -27,3 +27,13 @@ export const getQuotes = createServerFn({ method: "GET" })
     );
     return out.filter((x) => x !== null);
   });
+
+export const getSekRate = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    const { fxRates } = await import("./scanner.server");
+    const fx = await fxRates();
+    return { sekPerUsd: fx.SEK ? 1 / fx.SEK : null };
+  } catch {
+    return { sekPerUsd: null };
+  }
+});
