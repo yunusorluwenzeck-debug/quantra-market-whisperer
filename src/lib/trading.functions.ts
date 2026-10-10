@@ -100,42 +100,17 @@ export const backtest = createServerFn({ method: "POST" })
 
 export const getEmailStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    if (!(await isOwner(context.supabase as never, context.userId))) return { address: null, error: NOT_OWNER, owner: false };
-    const { gmailAddress } = await import("./notify.server");
-    try { return { address: await gmailAddress(), error: null, owner: true }; }
-    catch (e) { return { address: null, error: e instanceof Error ? e.message : "Gmail unavailable", owner: true }; }
-  });
+  .handler(async ({ context }) => (await import("./email-panel.server")).emailStatus(context.supabase as never, context.userId));
 
 export const sendTestEmail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    if (!(await isOwner(context.supabase as never, context.userId))) return { ok: false, to: null, error: NOT_OWNER };
-    const { sendEmail } = await import("./notify.server");
-    try {
-      const to = await sendEmail("Quantra test email", `Your Gmail connection works.\n\nSent: ${new Date().toISOString()}`);
-      return { ok: true, to, error: null };
-    } catch (e) { return { ok: false, to: null, error: e instanceof Error ? e.message : "Send failed" }; }
-  });
+  .handler(async ({ context }) => (await import("./email-panel.server")).testEmail(context.supabase as never, context.userId));
 
 export const getEmailPanel = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    if (!(await isOwner(context.supabase as never, context.userId))) return { owner: false, s: null, opps: [] };
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const [s, o] = await Promise.all([
-      supabaseAdmin.from("email_settings").select("enabled,min_score,max_sequences_per_day,stage_gap_minutes").eq("id", 1).maybeSingle(),
-      supabaseAdmin.from("opportunities").select("id,code,symbol,action,stage,status,score_at_detect,created_at").order("created_at", { ascending: false }).limit(15),
-    ]);
-    return { owner: true, s: s.data, opps: o.data ?? [] };
-  });
+  .handler(async ({ context }) => (await import("./email-panel.server")).emailPanel(context.supabase as never, context.userId));
 
 export const saveEmailSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ enabled: z.boolean(), min_score: z.number().int().min(60).max(100), max_sequences_per_day: z.number().int().min(1).max(20), stage_gap_minutes: z.number().int().min(30).max(1440) }).parse(d))
-  .handler(async ({ data, context }) => {
-    if (!(await isOwner(context.supabase as never, context.userId))) return { ok: false, error: NOT_OWNER };
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("email_settings").upsert({ id: 1, ...data, updated_at: new Date().toISOString() });
-    return { ok: !error, error: error?.message ?? null };
-  });
+  .handler(async ({ data, context }) => (await import("./email-panel.server")).saveSettings(context.supabase as never, context.userId, data));
