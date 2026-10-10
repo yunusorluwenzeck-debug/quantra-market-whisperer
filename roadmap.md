@@ -16,3 +16,5 @@
 - [ ] E2E tests: two real accounts — written; blocked: needs a second real account
 - [x] Security & privacy hardening (spec 13)
 - [x] Tests: non-owners cannot view/change/send test email
+- [ ] Final audit & polish (spec: FINAL_TASK)
+- [ ] Suspicious sign-in protection: temporary lock + owner email notification
