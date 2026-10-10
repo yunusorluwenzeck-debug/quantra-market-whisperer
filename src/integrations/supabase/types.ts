@@ -221,6 +221,24 @@ export type Database = {
         }
         Relationships: []
       }
+      order_keys: {
+        Row: {
+          created_at: string
+          key: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       paper_accounts: {
         Row: {
           cash: number
@@ -338,6 +356,30 @@ export type Database = {
           triggered_at?: string | null
           triggered_price?: number | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      security_events: {
+        Row: {
+          created_at: string
+          detail: Json
+          id: string
+          kind: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          kind: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          kind?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -477,6 +519,16 @@ export type Database = {
         Returns: boolean
       }
       last_scan_time: { Args: never; Returns: string }
+      purge_old_data: { Args: never; Returns: undefined }
+      security_table_report: {
+        Args: never
+        Returns: {
+          anon_select: boolean
+          policy_count: number
+          rls_enabled: boolean
+          table_name: string
+        }[]
+      }
     }
     Enums: {
       app_role: "owner" | "user"
