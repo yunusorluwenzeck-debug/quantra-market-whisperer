@@ -17,8 +17,8 @@
 - [x] Security & privacy hardening (spec 13)
 - [x] Tests: non-owners cannot view/change/send test email
 - [x] StockLab game spec: sidebar/bottom nav, career mode, private leagues (academy, AI coach, scenarios open)
-- [ ] Daily + weekly missions
-- [ ] Fund list readable on mobile
+- [x] Daily + weekly missions
+- [x] Fund list readable on mobile
 - [ ] Final audit & polish (spec: FINAL_TASK)
 - [x] Suspicious sign-in protection: temporary lock + owner email notification
 - [x] Per-user request limits (hourly, on trades, autopilot runs, settings, resets, test emails)
