@@ -5,8 +5,8 @@ import { isOwner } from "@/lib/owner";
 // Provide access tokens via E2E_OWNER_TOKEN and E2E_OTHER_TOKEN; skipped otherwise.
 const URL = "https://lvmkmmeaiilhsmoeesqe.supabase.co";
 const KEY = "sb_publishable_Q_UM8HuK6MWw1vLZbjCc1g_j0j8KISz";
-const OWNER = process.env.E2E_OWNER_TOKEN;
-const OTHER = process.env.E2E_OTHER_TOKEN;
+const OWNER = process.env['E2E_OWNER_TOKEN'];
+const OTHER = process.env['E2E_OTHER_TOKEN'];
 
 const headers = (t: string) => ({ apikey: KEY, Authorization: `Bearer ${t}`, "Content-Type": "application/json" });
 
