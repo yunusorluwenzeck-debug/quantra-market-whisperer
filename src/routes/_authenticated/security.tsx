@@ -79,7 +79,7 @@ function SecurityPage() {
           </Card>
 
           <Card title="Handel med riktiga pengar">
-            <p className="text-sm"><span className="font-mono text-xs uppercase text-destructive">Låst</span> — {data.liveTrading.reason}. All trades in Quantra are simulated paper trades.</p>
+            <p className="text-sm"><span className="font-mono text-xs uppercase text-destructive">Låst</span> — {data.liveTrading.reason}. Alla affärer i StockLab är simulerade med virtuella pengar.</p>
           </Card>
 
           <Card title="Externa tjänster som tar emot data">

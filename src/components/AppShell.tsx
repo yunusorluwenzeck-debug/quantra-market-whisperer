@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 const NAV = [
   { to: "/", label: "Översikt" },
   { to: "/screener", label: "Aktier" },
+  { to: "/fonder", label: "Fonder" },
   { to: "/backtest", label: "Historiktest" },
   { to: "/portfolio", label: "Portfölj" },
   { to: "/autopilot", label: "Autopilot" },
