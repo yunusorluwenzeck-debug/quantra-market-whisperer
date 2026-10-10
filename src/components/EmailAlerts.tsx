@@ -20,8 +20,8 @@ export function EmailAlerts() {
   useEffect(() => { if (data?.s) setF({ enabled: data.s.enabled, min_score: data.s.min_score, max_sequences_per_day: data.s.max_sequences_per_day, stage_gap_minutes: data.s.stage_gap_minutes }); }, [data?.s]);
   async function submit(over?: Partial<typeof f>) {
     const r = await save({ data: { ...f, ...over } });
-    if (!r.ok) { toast.error(r.error ?? "Save failed"); return; }
-    toast.success("Email settings saved");
+    if (!r.ok) { toast.error(r.error ?? "Kunde inte spara"); return; }
+    toast.success("E-postinställningar sparade");
     qc.invalidateQueries({ queryKey: ["email-settings"] });
   }
   const num = (k: "min_score" | "max_sequences_per_day" | "stage_gap_minutes", label: string) => (
@@ -31,17 +31,17 @@ export function EmailAlerts() {
   );
   if (data && !data.owner) return null;
   return (
-    <Card title="Gmail opportunity alerts">
+    <Card title="Gmail-larm om möjligheter">
       <div className="grid gap-4 p-4 text-sm">
         <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
-          <span>Connected Gmail: <b className={addr?.address ? "text-bull" : "text-bear"}>{addr?.address ?? addr?.error ?? "checking…"}</b></span>
-          <button onClick={async () => { const r = await test(); r.ok ? toast.success(`Test email sent to ${"to" in r ? r.to : "your Gmail"}`) : toast.error(r.error ?? "Failed"); }} className="rounded border border-border px-2 py-1 hover:bg-accent">Send test email</button>
-          <button onClick={() => { setF({ ...f, enabled: !f.enabled }); void submit({ enabled: !f.enabled }); }} className={`ml-auto rounded px-3 py-1.5 font-semibold ${f.enabled ? "border border-border" : "bg-primary text-primary-foreground"}`}>{f.enabled ? "Disable emails" : "Enable emails"}</button>
+          <span>Ansluten Gmail: <b className={addr?.address ? "text-bull" : "text-bear"}>{addr?.address ?? addr?.error ?? "checking…"}</b></span>
+          <button onClick={async () => { const r = await test(); r.ok ? toast.success(`Testmejl skickat till ${"to" in r ? r.to : "din Gmail"}`) : toast.error(r.error ?? "Misslyckades"); }} className="rounded border border-border px-2 py-1 hover:bg-accent">Skicka testmejl</button>
+          <button onClick={() => { setF({ ...f, enabled: !f.enabled }); void submit({ enabled: !f.enabled }); }} className={`ml-auto rounded px-3 py-1.5 font-semibold ${f.enabled ? "border border-border" : "bg-primary text-primary-foreground"}`}>{f.enabled ? "Stäng av mejl" : "Slå på mejl"}</button>
         </div>
-        <p className="text-xs text-muted-foreground">For each new opportunity you get exactly three emails: detected, update, and final status — spaced apart, never all at once. The same unchanged signal never triggers a new sequence.</p>
+        <p className="text-xs text-muted-foreground">För varje ny möjlighet får du exakt tre mejl: upptäckt, uppdatering och slutstatus — utspridda, aldrig samtidigt. Samma oförändrade signal startar aldrig en ny serie.</p>
         <form onSubmit={(e) => { e.preventDefault(); void submit(); }} className="flex flex-wrap items-end gap-3">
-          {num("min_score", "Min score")}{num("max_sequences_per_day", "Max new per day")}{num("stage_gap_minutes", "Minutes between emails")}
-          <button className="rounded-md border border-border px-3 py-1.5 font-mono text-xs">Save</button>
+          {num("min_score", "Lägsta poäng")}{num("max_sequences_per_day", "Max nya per dag")}{num("stage_gap_minutes", "Minuter mellan mejl")}
+          <button className="rounded-md border border-border px-3 py-1.5 font-mono text-xs">Spara</button>
         </form>
         {!!data?.opps.length && (
           <ul className="divide-y divide-border rounded border border-border font-mono text-xs">

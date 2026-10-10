@@ -10,10 +10,10 @@ export const Route = createFileRoute("/_authenticated/security")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Security & privacy — Quantra" },
-      { name: "description", content: "Live security checks, activity log, and controls to export or delete your Quantra data." },
-      { property: "og:title", content: "Security & privacy — Quantra" },
-      { property: "og:description", content: "Live security checks, activity log, and controls to export or delete your Quantra data." },
+      { title: "Säkerhet och integritet — StockLab" },
+      { name: "description", content: "Säkerhetskontroller, aktivitetslogg och möjlighet att exportera eller radera din data." },
+      { property: "og:title", content: "Säkerhet och integritet — StockLab" },
+      { property: "og:description", content: "Säkerhetskontroller, aktivitetslogg och möjlighet att exportera eller radera din data." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -27,7 +27,7 @@ const TONE: Record<string, string> = {
   warn: "bg-accent text-foreground",
   info: "bg-muted text-muted-foreground",
 };
-const WORD: Record<string, string> = { pass: "Passed", fail: "Failed", warn: "Warning", info: "Info" };
+const WORD: Record<string, string> = { pass: "Godkänd", fail: "Misslyckades", warn: "Varning", info: "Info" };
 
 function SecurityPage() {
   const status = useServerFn(getSecurityStatus);
@@ -47,30 +47,30 @@ function SecurityPage() {
   }
   async function wipe() {
     const r = await doDelete({ data: { confirm: "DELETE" } });
-    if (r.ok) { toast.success("Your data was deleted"); setConfirm(""); } else toast.error(r.error ?? "Failed");
+    if (r.ok) { toast.success("Din data har raderats"); setConfirm(""); } else toast.error(r.error ?? "Misslyckades");
   }
 
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="text-2xl font-bold">Security & privacy</h1>
-        <p className="text-sm text-muted-foreground">Every result below comes from a check run on the server when you open this page. No system is unhackable — this shows what is protected, what passed, and what is still limited.</p>
+        <h1 className="text-2xl font-bold">Säkerhet och integritet</h1>
+        <p className="text-sm text-muted-foreground">Varje resultat nedan kommer från en kontroll som körs på servern när du öppnar sidan. Inget system är helt säkert — här ser du vad som skyddas, vad som godkänts och vad som fortfarande är begränsat.</p>
       </div>
 
       {data && !data.owner && (
-        <Card title="Security checks"><p className="text-sm text-muted-foreground">Only the account owner can see the security checks. Your data controls are below.</p></Card>
+        <Card title="Säkerhetskontroller"><p className="text-sm text-muted-foreground">Bara kontoägaren ser säkerhetskontrollerna. Dina datainställningar finns nedan.</p></Card>
       )}
 
       {data?.owner && (
         <>
-          <Card title="Live checks" right={<button onClick={() => refetch()} disabled={isFetching} className="font-mono text-xs text-muted-foreground hover:text-foreground">{isFetching ? "Running…" : "Run again"}</button>}>
-            <p className="mb-3 font-mono text-[11px] text-muted-foreground">Last run {new Date(data.ranAt).toLocaleString("en-GB")}</p>
+          <Card title="Aktuella kontroller" right={<button onClick={() => refetch()} disabled={isFetching} className="font-mono text-xs text-muted-foreground hover:text-foreground">{isFetching ? "Kör…" : "Kör igen"}</button>}>
+            <p className="mb-3 font-mono text-[11px] text-muted-foreground">Last run {new Date(data.ranAt).toLocaleString("sv-SE")}</p>
             <ul className="grid gap-2">
               {data.checks.map((c) => (
                 <li key={c.id} className="flex items-start gap-3 rounded-md border border-border p-3">
                   <span className={`shrink-0 rounded px-2 py-0.5 font-mono text-[10px] uppercase ${TONE[c.status]}`}>{WORD[c.status]}</span>
                   <div>
-                    <div className="text-sm font-medium">{c.label}{c.critical && <span className="ml-2 font-mono text-[10px] text-muted-foreground">CRITICAL</span>}</div>
+                    <div className="text-sm font-medium">{c.label}{c.critical && <span className="ml-2 font-mono text-[10px] text-muted-foreground">KRITISK</span>}</div>
                     <div className="text-xs text-muted-foreground">{c.detail}</div>
                   </div>
                 </li>
@@ -78,21 +78,21 @@ function SecurityPage() {
             </ul>
           </Card>
 
-          <Card title="Real-money trading">
-            <p className="text-sm"><span className="font-mono text-xs uppercase text-destructive">Locked</span> — {data.liveTrading.reason}. All trades in Quantra are simulated paper trades.</p>
+          <Card title="Handel med riktiga pengar">
+            <p className="text-sm"><span className="font-mono text-xs uppercase text-destructive">Låst</span> — {data.liveTrading.reason}. All trades in Quantra are simulated paper trades.</p>
           </Card>
 
-          <Card title="Outside services that receive data">
+          <Card title="Externa tjänster som tar emot data">
             <ul className="grid gap-1 text-sm">
               {data.providers.map((p) => <li key={p.name}><span className="font-medium">{p.name}:</span> <span className="text-muted-foreground">{p.gets}</span></li>)}
             </ul>
-            <p className="mt-2 text-xs text-muted-foreground">Your financial data is never sold, published or shared beyond this list.</p>
+            <p className="mt-2 text-xs text-muted-foreground">Din ekonomiska data säljs, publiceras eller delas aldrig utöver denna lista.</p>
           </Card>
 
-          <Card title="Sign-in requests blocked by rate limits">
+          <Card title="Inloggningsförsök stoppade av gränser">
             <div className="overflow-x-auto">
               <table className="w-full font-mono text-xs">
-                <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr><th className="py-1">Endpoint</th><th>Period</th><th className="text-right">Per-visitor limit</th><th className="text-right">App-wide limit</th></tr></thead>
+                <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr><th className="py-1">Typ</th><th>Period</th><th className="text-right">Per besökare</th><th className="text-right">Hela appen</th></tr></thead>
                 <tbody>
                   {data.blocked.flatMap((b) => b.periods.map((p, i) => (
                     <tr key={b.endpoint + p.label} className="border-t border-border/50">
@@ -105,30 +105,30 @@ function SecurityPage() {
             </div>
           </Card>
 
-          <Card title="Recent security activity">
-            {data.events.length === 0 ? <p className="text-sm text-muted-foreground">No events yet.</p> : (
+          <Card title="Senaste säkerhetshändelser">
+            {data.events.length === 0 ? <p className="text-sm text-muted-foreground">Inga händelser än.</p> : (
               <ul className="grid gap-1 font-mono text-xs">
                 {data.events.map((e, i) => (
-                  <li key={i} className="flex gap-3"><span className="text-muted-foreground">{new Date(e.created_at).toLocaleString("en-GB")}</span><span>{e.kind.replaceAll("_", " ")}</span></li>
+                  <li key={i} className="flex gap-3"><span className="text-muted-foreground">{new Date(e.created_at).toLocaleString("sv-SE")}</span><span>{e.kind.replaceAll("_", " ")}</span></li>
                 ))}
               </ul>
             )}
-            <p className="mt-2 text-xs text-muted-foreground">Kept for 180 days. Never contains passwords or keys.</p>
+            <p className="mt-2 text-xs text-muted-foreground">Sparas i 180 dagar. Innehåller aldrig lösenord eller nycklar.</p>
           </Card>
         </>
       )}
 
-      <Card title="Your data">
+      <Card title="Din data">
         <div className="grid gap-4">
           <div>
-            <button onClick={() => void download()} className="rounded-md bg-primary px-3 py-1.5 font-mono text-xs font-semibold text-primary-foreground">Export my data</button>
-            <p className="mt-1 text-xs text-muted-foreground">Downloads your portfolio, trades, autopilot settings and log, lists, alerts and activity as a file.</p>
+            <button onClick={() => void download()} className="rounded-md bg-primary px-3 py-1.5 font-mono text-xs font-semibold text-primary-foreground">Exportera min data</button>
+            <p className="mt-1 text-xs text-muted-foreground">Laddar ner portfölj, affärer, autopilotinställningar och logg, listor, larm och aktivitet som en fil.</p>
           </div>
           <div>
-            <p className="text-sm">Delete my data — removes your paper portfolio, trades, autopilot settings, lists and alerts. This cannot be undone. Type <span className="font-mono">DELETE</span> to confirm.</p>
+            <p className="text-sm">Radera min data — tar bort din virtuella portfölj, affärer, autopilotinställningar, listor och larm. Detta kan inte ångras. Skriv <span className="font-mono">DELETE</span> för att bekräfta.</p>
             <div className="mt-2 flex gap-2">
               <input value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="DELETE" className="w-32 rounded-md border border-input bg-card px-3 py-1.5 font-mono text-xs outline-none focus:ring-2 focus:ring-ring" />
-              <button disabled={confirm !== "DELETE"} onClick={() => void wipe()} className="rounded-md bg-destructive px-3 py-1.5 font-mono text-xs font-semibold text-destructive-foreground disabled:opacity-40">Delete</button>
+              <button disabled={confirm !== "DELETE"} onClick={() => void wipe()} className="rounded-md bg-destructive px-3 py-1.5 font-mono text-xs font-semibold text-destructive-foreground disabled:opacity-40">Radera</button>
             </div>
           </div>
         </div>

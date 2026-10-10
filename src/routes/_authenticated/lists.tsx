@@ -10,10 +10,10 @@ export const Route = createFileRoute("/_authenticated/lists")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "My stock lists | Quantra" },
-      { name: "description", content: "Organize stocks into your own custom lists and revisit their scores anytime." },
-      { property: "og:title", content: "My stock lists | Quantra" },
-      { property: "og:description", content: "Organize stocks into your own custom lists and revisit their scores anytime." },
+      { title: "Mina listor | StockLab" },
+      { name: "description", content: "Samla aktier i egna listor och följ deras poäng när du vill." },
+      { property: "og:title", content: "Mina listor | StockLab" },
+      { property: "og:description", content: "Samla aktier i egna listor och följ deras poäng när du vill." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -54,28 +54,28 @@ function Lists() {
   }
   return (
     <div className="grid gap-6 md:grid-cols-[240px_1fr]">
-      <Card title="My lists">
+      <Card title="Mina listor">
         <ul>
           {lists?.map((l) => (
             <li key={l.id}><button onClick={() => setActive(l.id)} className={`flex w-full justify-between border-l-2 px-4 py-2.5 text-left text-sm hover:bg-accent ${cur?.id === l.id ? "border-primary bg-accent" : "border-transparent"}`}>{l.name}<span className="font-mono text-xs text-muted-foreground">{l.symbols.length}</span></button></li>
           ))}
         </ul>
         <form onSubmit={create} className="flex gap-2 border-t border-border p-3">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="New list name" className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
-          <button className="rounded-md bg-primary px-3 font-mono text-xs font-semibold text-primary-foreground">Add</button>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Namn på ny lista" className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
+          <button className="rounded-md bg-primary px-3 font-mono text-xs font-semibold text-primary-foreground">Lägg till</button>
         </form>
       </Card>
       {cur ? (
         <Card title={cur.name} right={
           <div className="flex gap-3">
-            <button onClick={async () => { const n = prompt("Rename list", cur.name); if (n?.trim()) { await supabase.from("stock_lists").update({ name: n.trim() }).eq("id", cur.id); refresh(); } }} className="font-mono text-xs text-muted-foreground hover:text-foreground">Rename</button>
-            <button onClick={async () => { if (confirm(`Delete "${cur.name}"?`)) { await supabase.from("stock_lists").delete().eq("id", cur.id); setActive(null); refresh(); } }} className="font-mono text-xs text-bear">Delete</button>
+            <button onClick={async () => { const n = prompt("Byt namn på listan", cur.name); if (n?.trim()) { await supabase.from("stock_lists").update({ name: n.trim() }).eq("id", cur.id); refresh(); } }} className="font-mono text-xs text-muted-foreground hover:text-foreground">Byt namn</button>
+            <button onClick={async () => { if (confirm(`Radera "${cur.name}"?`)) { await supabase.from("stock_lists").delete().eq("id", cur.id); setActive(null); refresh(); } }} className="font-mono text-xs text-bear">Radera</button>
           </div>}>
           <form onSubmit={addSym} className="flex gap-2 border-b border-border p-3">
-            <input value={add} onChange={(e) => setAdd(e.target.value)} placeholder="Add ticker, e.g. ASML.AS" className="w-56 rounded-md border border-input bg-background px-2 py-1.5 font-mono text-sm uppercase" />
-            <button className="rounded-md border border-border px-3 font-mono text-xs">Add stock</button>
+            <input value={add} onChange={(e) => setAdd(e.target.value)} placeholder="Lägg till ticker, t.ex. ASML.AS" className="w-56 rounded-md border border-input bg-background px-2 py-1.5 font-mono text-sm uppercase" />
+            <button className="rounded-md border border-border px-3 font-mono text-xs">Lägg till aktie</button>
           </form>
-          {!cur.symbols.length ? <p className="p-4 text-sm text-muted-foreground">Empty list. Add tickers here or from any stock page.</p> : (
+          {!cur.symbols.length ? <p className="p-4 text-sm text-muted-foreground">Tom lista. Lägg till tickers här eller från en aktiesida.</p> : (
             <>
               <StockTable rows={rows ?? []} />
               <div className="flex flex-wrap gap-2 p-3">
@@ -86,7 +86,7 @@ function Lists() {
             </>
           )}
         </Card>
-      ) : <p className="text-sm text-muted-foreground">Create your first list to start organizing stocks.</p>}
+      ) : <p className="text-sm text-muted-foreground">Skapa din första lista för att samla aktier.</p>}
     </div>
   );
 }

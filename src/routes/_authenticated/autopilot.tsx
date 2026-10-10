@@ -12,10 +12,10 @@ export const Route = createFileRoute("/_authenticated/autopilot")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "AI Autopilot — automated paper trading | Quantra" },
-      { name: "description", content: "Let the AI trade your paper portfolio within your risk limits, with a full decision log and emergency stop." },
-      { property: "og:title", content: "AI Autopilot — automated paper trading | Quantra" },
-      { property: "og:description", content: "Let the AI trade your paper portfolio within your risk limits, with a full decision log and emergency stop." },
+      { title: "AI Autopilot — automated paper trading | StockLab" },
+      { name: "description", content: "Låt AI:n handla i din virtuella portfölj inom dina riskgränser, med fullständig logg och nödstopp." },
+      { property: "og:title", content: "AI Autopilot — automated paper trading | StockLab" },
+      { property: "og:description", content: "Låt AI:n handla i din virtuella portfölj inom dina riskgränser, med fullständig logg och nödstopp." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -55,10 +55,10 @@ function Autopilot() {
 
   async function submit(enabledOverride?: boolean) {
     const enabled = enabledOverride ?? f.enabled;
-    if (enabled && !data?.s?.enabled && !confirm("Authorize the AI to buy and sell automatically in your paper portfolio within these limits? No real money is used.")) return;
+    if (enabled && !data?.s?.enabled && !confirm("Tillåta AI:n att köpa och sälja automatiskt i din virtuella portfölj inom dessa gränser? Inga riktiga pengar används.")) return;
     const r = await save({ data: { ...f, enabled, max_trade_usd: Number(f.max_trade_usd), blocked_symbols: blocked.split(/[\s,]+/).map((x) => x.trim().toUpperCase()).filter(Boolean) } });
-    if (!r.ok) { toast.error(r.error ?? "Save failed"); return; }
-    toast.success("Settings saved");
+    if (!r.ok) { toast.error(r.error ?? "Kunde inte spara"); return; }
+    toast.success("Inställningarna sparade");
     qc.invalidateQueries({ queryKey: ["bot"] });
   }
   const n = (k: keyof typeof DEFAULTS, label: string, hint?: string) => (
@@ -74,49 +74,49 @@ function Autopilot() {
     <div className="grid gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">AI Autopilot <span className="ml-2 rounded border border-border px-2 py-0.5 align-middle font-mono text-[10px] text-muted-foreground">PAPER TRADING</span></h1>
-          <p className="max-w-2xl text-sm text-muted-foreground">Every 30 minutes the AI reviews the whole scanned universe, exits positions that hit stop-loss, take-profit or lose their signal, and buys the highest-scoring stocks — always within your limits. Every decision is logged with its reason.</p>
+          <h1 className="text-2xl font-bold">AI-autopilot <span className="ml-2 rounded border border-border px-2 py-0.5 align-middle font-mono text-[10px] text-muted-foreground">VIRTUELLA PENGAR</span></h1>
+          <p className="max-w-2xl text-sm text-muted-foreground">Var 30:e minut går AI:n igenom alla skannade aktier, säljer innehav som når stop-loss, vinstmål eller tappar sin signal, och köper aktierna med högst poäng — alltid inom dina gränser. Varje beslut loggas med orsak.</p>
         </div>
         <button onClick={async () => { await estop({ data: { stop: !s?.emergency_stop } }); qc.invalidateQueries({ queryKey: ["bot"] }); }}
           className={`rounded-md px-5 py-3 font-mono text-sm font-bold ${s?.emergency_stop ? "border border-border" : "bg-bear text-background"}`}>
-          {s?.emergency_stop ? "Release emergency stop" : "EMERGENCY STOP"}
+          {s?.emergency_stop ? "Släpp nödstoppet" : "EMERGENCY STOP"}
         </button>
       </div>
       <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-card p-4 font-mono text-sm">
         <span>Status: <b className={status === "ACTIVE" ? "text-bull" : status === "OFF" ? "text-muted-foreground" : "text-bear"}>{status}</b></span>
         {s?.paused_reason && <span className="text-bear">{s.paused_reason}</span>}
         <span className="text-muted-foreground">Last run: {s?.last_run ? new Date(s.last_run).toLocaleString() : "never"}</span>
-        <button onClick={() => submit(!f.enabled)} className={`ml-auto rounded-md px-4 py-2 text-xs font-semibold ${f.enabled ? "border border-border" : "bg-primary text-primary-foreground"}`}>{f.enabled ? "Turn autopilot off" : "Turn autopilot on"}</button>
-        <button disabled={!s?.enabled} onClick={async () => { const r = await runNow(); r.ok ? toast.success(`Run complete: ${r.trades ?? 0} trades${r.pause ? ` (paused: ${r.pause})` : ""}`) : toast.error(r.error ?? "Failed"); qc.invalidateQueries(); }} className="rounded-md border border-border px-4 py-2 text-xs disabled:opacity-40">Run now</button>
+        <button onClick={() => submit(!f.enabled)} className={`ml-auto rounded-md px-4 py-2 text-xs font-semibold ${f.enabled ? "border border-border" : "bg-primary text-primary-foreground"}`}>{f.enabled ? "Stäng av autopiloten" : "Slå på autopiloten"}</button>
+        <button disabled={!s?.enabled} onClick={async () => { const r = await runNow(); r.ok ? toast.success(`Körning klar: ${r.trades ?? 0} affärer${r.pause ? ` (paused: ${r.pause})` : ""}`) : toast.error(r.error ?? "Misslyckades"); qc.invalidateQueries(); }} className="rounded-md border border-border px-4 py-2 text-xs disabled:opacity-40">Kör nu</button>
       </div>
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-        <Card title="Strategy & risk limits">
+        <Card title="Strategi och riskgränser">
           <form onSubmit={(e) => { e.preventDefault(); void submit(); }} className="grid gap-5 p-4">
             <div className="flex flex-wrap gap-4 text-sm">
               {(["US", "EU"] as const).map((r) => (
-                <label key={r} className="flex items-center gap-2"><input type="checkbox" checked={f.regions.includes(r)} onChange={(e) => setF({ ...f, regions: e.target.checked ? [...f.regions, r] : f.regions.filter((x) => x !== r) })} />{r === "US" ? "US markets" : "European markets"}</label>
+                <label key={r} className="flex items-center gap-2"><input type="checkbox" checked={f.regions.includes(r)} onChange={(e) => setF({ ...f, regions: e.target.checked ? [...f.regions, r] : f.regions.filter((x) => x !== r) })} />{r === "US" ? "US markets" : "Europeiska marknader"}</label>
               ))}
-              <label className="flex items-center gap-2"><input type="checkbox" checked={f.market_hours_only} onChange={(e) => setF({ ...f, market_hours_only: e.target.checked })} />Trade only during market hours</label>
+              <label className="flex items-center gap-2"><input type="checkbox" checked={f.market_hours_only} onChange={(e) => setF({ ...f, market_hours_only: e.target.checked })} />Handla bara när börsen är öppen</label>
             </div>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {n("min_score", "Min score to buy", "50–100")}
-              {n("max_positions", "Max positions")}
-              {n("max_trade_usd", "Max $ per trade")}
-              {n("max_exposure_pct", "Max exposure %", "Of total equity")}
-              {n("daily_loss_limit_pct", "Daily loss limit %", "Pauses new buys")}
-              {n("max_drawdown_pct", "Max drawdown %", "From peak equity")}
+              {n("min_score", "Lägsta poäng för köp", "50–100")}
+              {n("max_positions", "Max antal innehav")}
+              {n("max_trade_usd", "Max USD per affär")}
+              {n("max_exposure_pct", "Max investerat %", "Av totalt värde")}
+              {n("daily_loss_limit_pct", "Daglig förlustgräns %", "Pausar nya köp")}
+              {n("max_drawdown_pct", "Max nedgång %", "Från högsta värde")}
               {n("stop_loss_pct", "Stop-loss %")}
-              {n("take_profit_pct", "Take-profit %")}
+              {n("take_profit_pct", "Vinstmål %")}
             </div>
-            <label className="grid gap-1 text-xs"><span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Never trade these tickers</span>
-              <input value={blocked} onChange={(e) => setBlocked(e.target.value)} placeholder="e.g. TSLA, GME" className="rounded-md border border-input bg-background px-2 py-1.5 font-mono text-sm" />
+            <label className="grid gap-1 text-xs"><span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Handla aldrig dessa tickers</span>
+              <input value={blocked} onChange={(e) => setBlocked(e.target.value)} placeholder="t.ex. TSLA, GME" className="rounded-md border border-input bg-background px-2 py-1.5 font-mono text-sm" />
             </label>
-            <button className="justify-self-start rounded-md bg-primary px-4 py-2 font-mono text-sm font-semibold text-primary-foreground">Save settings</button>
+            <button className="justify-self-start rounded-md bg-primary px-4 py-2 font-mono text-sm font-semibold text-primary-foreground">Spara inställningar</button>
           </form>
         </Card>
-        <Card title="Decision & event log">
+        <Card title="Beslut och händelser">
           <ul className="max-h-[520px] divide-y divide-border overflow-y-auto">
-            {!data?.events.length && <li className="p-4 text-sm text-muted-foreground">No events yet. Trades with their reasons appear in your portfolio history.</li>}
+            {!data?.events.length && <li className="p-4 text-sm text-muted-foreground">Inga händelser än. Affärer och deras orsaker visas i portföljhistoriken.</li>}
             {data?.events.map((e) => (
               <li key={e.id} className="p-3 text-xs">
                 <div className="font-mono text-[10px] text-muted-foreground">{new Date(e.created_at).toLocaleString()} · {e.kind.toUpperCase()}</div>
@@ -127,7 +127,7 @@ function Autopilot() {
         </Card>
       </div>
       <EmailAlerts />
-      <p className="text-xs text-muted-foreground">Real-money trading is not connected. Linking a broker account requires a compatible brokerage with an official trading API.</p>
+      <p className="text-xs text-muted-foreground">Handel med riktiga pengar är inte ansluten. Det kräver en mäklare med ett officiellt handels-API.</p>
     </div>
   );
 }

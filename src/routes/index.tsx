@@ -11,9 +11,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "StockLab — Översikt över 4 000+ aktier" },
-      { name: "description", content: "Continuously scores thousands of US and European stocks, writes AI reports on top picks, and runs a paper-trading autopilot." },
+      { name: "description", content: "Poängsätter tusentals amerikanska och europeiska aktier, skriver AI-rapporter om toppvalen och kör en autopilot med virtuella pengar." },
       { property: "og:title", content: "StockLab — Översikt över 4 000+ aktier" },
-      { property: "og:description", content: "Continuously scores thousands of US and European stocks, writes AI reports on top picks, and runs a paper-trading autopilot." },
+      { property: "og:description", content: "Poängsätter tusentals amerikanska och europeiska aktier, skriver AI-rapporter om toppvalen och kör en autopilot med virtuella pengar." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -48,17 +48,17 @@ function Dashboard() {
   });
 
   const tiles = [
-    ["Companies tracked", fmt(stats?.all, 0)],
-    ["Scored", fmt(stats?.scored, 0)],
-    ["Buy signals", fmt(stats?.buys, 0)],
-    ["Sell signals", fmt(stats?.sells, 0)],
-    ["Last scan", stats?.last ? new Date(stats.last).toLocaleTimeString() : "—"],
+    ["Bevakade bolag", fmt(stats?.all, 0)],
+    ["Poängsatta", fmt(stats?.scored, 0)],
+    ["Köpsignaler", fmt(stats?.buys, 0)],
+    ["Säljsignaler", fmt(stats?.sells, 0)],
+    ["Senaste skanning", stats?.last ? new Date(stats.last).toLocaleTimeString() : "—"],
   ];
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Market intelligence</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Every listed company in our US and European universe is re-scored around the clock on trend, momentum, RSI and volatility. The AI writes deep-dive reports on the strongest setups.</p>
+        <h1 className="text-3xl font-bold tracking-tight">Marknadsöversikt</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Alla bolag i vårt amerikanska och europeiska urval poängsätts dygnet runt utifrån trend, momentum, RSI och volatilitet. AI:n skriver fördjupade rapporter om de starkaste lägena.</p>
       </div>
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-5">
         {tiles.map(([k, v]) => (
@@ -69,12 +69,12 @@ function Dashboard() {
         ))}
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card title="Top picks · US" right={<Link to="/screener" search={{ region: "US" }} className="font-mono text-xs text-primary">All →</Link>}><StockTable rows={us ?? []} compactMode /></Card>
-        <Card title="Top picks · Europe" right={<Link to="/screener" search={{ region: "EU" }} className="font-mono text-xs text-primary">All →</Link>}><StockTable rows={eu ?? []} compactMode /></Card>
+        <Card title="Toppval · USA" right={<Link to="/screener" search={{ region: "US" }} className="font-mono text-xs text-primary">Alla →</Link>}><StockTable rows={us ?? []} compactMode /></Card>
+        <Card title="Toppval · Europa" right={<Link to="/screener" search={{ region: "EU" }} className="font-mono text-xs text-primary">Alla →</Link>}><StockTable rows={eu ?? []} compactMode /></Card>
       </div>
-      <Card title="Latest AI reports on top picks">
+      <Card title="Senaste AI-rapporterna om toppval">
         {!reports?.length ? (
-          <p className="p-4 text-sm text-muted-foreground">Reports are generated automatically every few hours for the highest-scoring stocks.</p>
+          <p className="p-4 text-sm text-muted-foreground">Rapporter skapas automatiskt med några timmars mellanrum för aktierna med högst poäng.</p>
         ) : (
           <div className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
             {reports.map((r) => (

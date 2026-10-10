@@ -21,16 +21,16 @@ export function StockDetail({ symbol }: { symbol: string }) {
   });
   const [range, setRange] = useState<keyof typeof RANGES>("6M");
   if (isLoading) return <div className="animate-pulse rounded-lg border border-border bg-card p-10 font-mono text-sm text-muted-foreground">Loading {symbol}…</div>;
-  if (!data?.stock) return <div className="rounded-lg border border-border bg-card p-10 text-bear">{data?.error ?? "Could not load data"}</div>;
+  if (!data?.stock) return <div className="rounded-lg border border-border bg-card p-10 text-bear">{data?.error ?? "Kunde inte ladda data"}</div>;
   const s = data.stock;
   const pts = s.candles.slice(-RANGES[range]).map((c) => ({ d: new Date(c.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }), c: c.c }));
   const up = pts.length > 1 && pts.at(-1)!.c >= pts[0]!.c;
   const ind = s.indicators;
   const stats = [
-    ["Quant score", row?.score != null ? `${row.score}/100` : "—"],
+    ["Poäng", row?.score != null ? `${row.score}/100` : "—"],
     ["SMA 20", fmt(ind.sma20)], ["SMA 50", fmt(ind.sma50)], ["RSI 14", fmt(ind.rsi14, 1)],
-    ["Volatility", `${fmt(ind.volatility, 1)}%`], ["1M Momentum", `${fmt(ind.momentum1m)}%`],
-    ["52W Range", `${fmt(ind.low52)} – ${fmt(ind.high52)}`], ["Sector", row?.sector ?? "—"],
+    ["Volatilitet", `${fmt(ind.volatility, 1)}%`], ["1M Momentum", `${fmt(ind.momentum1m)}%`],
+    ["52W Range", `${fmt(ind.low52)} – ${fmt(ind.high52)}`], ["Sektor", row?.sector ?? "—"],
   ];
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
@@ -109,26 +109,26 @@ function TradeBox({ symbol, priceUsd, currency }: { symbol: string; priceUsd: nu
     setBusy(true);
     const r = await order({ data: { clientKey: crypto.randomUUID(), ...(side === "sell" && pos && Number(amt) <= 0 ? { symbol, side, qty: Number(pos.qty) } : { symbol, side, amountUsd: Number(amt) }) } });
     setBusy(false);
-    if (!r.ok) { toast.error(r.error ?? "Order failed"); return; }
-    toast.success(`Simulated ${side} of ${fmt(r.qty, 4)} ${symbol} @ ${usd(r.price)}`);
+    if (!r.ok) { toast.error(r.error ?? "Ordern misslyckades"); return; }
+    toast.success(`Simulerat ${side === "buy" ? "köp" : "sälj"} av ${fmt(r.qty, 4)} ${symbol} @ ${usd(r.price)}`);
     qc.invalidateQueries();
   }
   return (
     <section className="rounded-lg border border-border bg-card p-4">
-      <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Paper trade</div>
+      <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Virtuell affär</div>
       {!user ? <div className="mt-3"><SignInCta what="place simulated trades" /></div> : (
         <div className="mt-3 grid gap-3 text-sm">
-          <div className="flex justify-between font-mono text-xs text-muted-foreground"><span>Cash</span><span>{usd(acc?.cash ?? 100000)}</span></div>
-          <div className="flex justify-between font-mono text-xs text-muted-foreground"><span>Held</span><span>{pos ? `${fmt(pos.qty, 4)} @ ${usd(pos.avg_cost)}` : "—"}</span></div>
+          <div className="flex justify-between font-mono text-xs text-muted-foreground"><span>Kassa</span><span>{usd(acc?.cash ?? 100000)}</span></div>
+          <div className="flex justify-between font-mono text-xs text-muted-foreground"><span>Innehav</span><span>{pos ? `${fmt(pos.qty, 4)} @ ${usd(pos.avg_cost)}` : "—"}</span></div>
           {currency !== "USD" && <div className="font-mono text-[10px] text-muted-foreground">Priced in USD at ≈ {usd(priceUsd)} (converted from {currency})</div>}
           <label className="grid gap-1 font-mono text-xs">Amount (USD)
             <input value={amt} onChange={(e) => setAmt(e.target.value)} inputMode="decimal" className="rounded-md border border-input bg-background px-3 py-2 text-sm" />
           </label>
           <div className="grid grid-cols-2 gap-2">
-            <button disabled={busy} onClick={() => go("buy")} className="rounded-md bg-bull py-2 font-mono text-sm font-semibold text-background disabled:opacity-50">Buy</button>
-            <button disabled={busy || !pos} onClick={() => go("sell")} className="rounded-md bg-bear py-2 font-mono text-sm font-semibold text-background disabled:opacity-50">Sell</button>
+            <button disabled={busy} onClick={() => go("buy")} className="rounded-md bg-bull py-2 font-mono text-sm font-semibold text-background disabled:opacity-50">Köp</button>
+            <button disabled={busy || !pos} onClick={() => go("sell")} className="rounded-md bg-bear py-2 font-mono text-sm font-semibold text-background disabled:opacity-50">Sälj</button>
           </div>
-          {pos && <button disabled={busy} onClick={() => { setAmt("0"); void order({ data: { clientKey: crypto.randomUUID(), symbol, side: "sell", qty: Number(pos.qty) } }).then((r) => { r.ok ? toast.success("Position closed") : toast.error(r.error ?? "Failed"); qc.invalidateQueries(); }); }} className="font-mono text-xs text-muted-foreground hover:text-foreground">Close entire position</button>}
+          {pos && <button disabled={busy} onClick={() => { setAmt("0"); void order({ data: { clientKey: crypto.randomUUID(), symbol, side: "sell", qty: Number(pos.qty) } }).then((r) => { r.ok ? toast.success("Innehavet sålt") : toast.error(r.error ?? "Misslyckades"); qc.invalidateQueries(); }); }} className="font-mono text-xs text-muted-foreground hover:text-foreground">Sälj hela innehavet</button>}
         </div>
       )}
     </section>
@@ -152,31 +152,31 @@ function ListAndAlert({ symbol, price, currency }: { symbol: string; price: numb
   }
   async function addAlert() {
     const t = Number(target);
-    if (!(t > 0)) { toast.error("Enter a target price"); return; }
+    if (!(t > 0)) { toast.error("Ange ett målpris"); return; }
     const { error } = await supabase.from("price_alerts").insert({ symbol, direction: dir, target: t });
-    if (error) toast.error(error.message); else { toast.success(`Alert set: ${symbol} ${dir} ${fmt(t)} ${currency}`); qc.invalidateQueries({ queryKey: ["alerts"] }); }
+    if (error) toast.error(error.message); else { toast.success(`Larm satt: ${symbol} ${dir} ${fmt(t)} ${currency}`); qc.invalidateQueries({ queryKey: ["alerts"] }); }
   }
   return (
     <section className="grid gap-4 rounded-lg border border-border bg-card p-4">
       <div>
-        <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Lists</div>
+        <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Listor</div>
         <div className="mt-2 flex flex-wrap gap-2">
           {(lists ?? []).map((l) => (
             <button key={l.id} onClick={() => toggle(l)} className={`rounded border px-2 py-1 font-mono text-xs ${l.symbols.includes(symbol) ? "border-primary text-primary" : "border-border text-muted-foreground"}`}>
               {l.symbols.includes(symbol) ? "✓ " : "+ "}{l.name}
             </button>
           ))}
-          <Link to="/lists" className="px-1 py-1 font-mono text-xs text-muted-foreground underline">Manage</Link>
+          <Link to="/lists" className="px-1 py-1 font-mono text-xs text-muted-foreground underline">Hantera</Link>
         </div>
       </div>
       <div>
         <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Price alert ({currency})</div>
         <div className="mt-2 flex gap-2">
           <select value={dir} onChange={(e) => setDir(e.target.value as "above" | "below")} className="rounded-md border border-input bg-background px-2 text-xs">
-            <option value="above">Above</option><option value="below">Below</option>
+            <option value="above">Över</option><option value="below">Under</option>
           </select>
           <input value={target} onChange={(e) => setTarget(e.target.value)} inputMode="decimal" className="w-full rounded-md border border-input bg-background px-2 py-1.5 font-mono text-sm" />
-          <button onClick={addAlert} className="rounded-md bg-primary px-3 font-mono text-xs font-semibold text-primary-foreground">Set</button>
+          <button onClick={addAlert} className="rounded-md bg-primary px-3 font-mono text-xs font-semibold text-primary-foreground">Sätt</button>
         </div>
       </div>
     </section>
@@ -201,11 +201,11 @@ function AiPanel({ symbol }: { symbol: string }) {
     setText(""); setErr(""); setState("loading");
     try {
       const { data: sess } = await supabase.auth.getSession();
-      if (!sess.session) throw new Error("Sign in to run AI analysis.");
+      if (!sess.session) throw new Error("Logga in för att köra AI-analys.");
       const res = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${sess.session.access_token}` }, body: JSON.stringify({ symbol }), signal: ac.signal });
       if (!res.ok || !res.body) {
         const j = await res.json().catch(() => ({}));
-        throw new Error(j.error ?? (res.status === 429 ? "Too many requests, try again shortly." : res.status === 402 ? "AI credits exhausted." : "Analysis failed"));
+        throw new Error(j.error ?? (res.status === 429 ? "För många förfrågningar, försök snart igen." : res.status === 402 ? "AI credits exhausted." : "Analysen misslyckades"));
       }
       const reader = res.body.getReader();
       const dec = new TextDecoder();
@@ -216,11 +216,11 @@ function AiPanel({ symbol }: { symbol: string }) {
         acc += dec.decode(value, { stream: true });
         setText(acc);
       }
-      if (!acc.trim()) throw new Error("The AI returned no analysis. Please try again later.");
+      if (!acc.trim()) throw new Error("AI:n gav ingen analys. Försök igen senare.");
       setState("done");
     } catch (e) {
       if (ac.signal.aborted) { setState("idle"); return; }
-      setErr(e instanceof Error ? e.message : "Analysis failed");
+      setErr(e instanceof Error ? e.message : "Analysen misslyckades");
       setState("error");
     }
   }
@@ -229,20 +229,20 @@ function AiPanel({ symbol }: { symbol: string }) {
     <section className="rounded-lg border border-primary/30 bg-card p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="font-mono text-xs uppercase tracking-widest text-primary">AI Prediction Engine</div>
+          <div className="font-mono text-xs uppercase tracking-widest text-primary">AI-analys</div>
           <p className="mt-1 text-sm text-muted-foreground">
-            {!text && saved ? `Saved report from ${new Date(saved.created_at).toLocaleString()}.` : `Signal, price outlook and key levels for ${symbol}, from live technical data.`}
+            {!text && saved ? `Sparad rapport från ${new Date(saved.created_at).toLocaleString("sv-SE")}.` : `Signal, kursutsikt och viktiga nivåer för ${symbol}, baserat på aktuell teknisk data.`}
           </p>
         </div>
         {state === "loading" ? (
-          <button onClick={() => abort.current?.abort()} className="rounded-md border border-border px-4 py-2 font-mono text-sm hover:bg-accent">Stop</button>
+          <button onClick={() => abort.current?.abort()} className="rounded-md border border-border px-4 py-2 font-mono text-sm hover:bg-accent">Stoppa</button>
         ) : (
           <button onClick={run} className="rounded-md bg-primary px-4 py-2 font-mono text-sm font-semibold text-primary-foreground hover:opacity-90">
-            {state === "done" || saved ? "Run fresh analysis" : "Run AI analysis"}
+            {state === "done" || saved ? "Kör ny analys" : "Kör AI-analys"}
           </button>
         )}
       </div>
-      {state === "loading" && !text && <div className="mt-6 animate-pulse font-mono text-sm text-muted-foreground">Analyzing market structure…</div>}
+      {state === "loading" && !text && <div className="mt-6 animate-pulse font-mono text-sm text-muted-foreground">Analyserar marknaden…</div>}
       {state === "error" && <div className="mt-6 text-sm text-bear">{err}</div>}
       {shown && <div className="prose-ai mt-4"><ReactMarkdown>{shown}</ReactMarkdown></div>}
     </section>

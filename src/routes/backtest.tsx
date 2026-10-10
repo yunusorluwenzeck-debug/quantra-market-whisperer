@@ -10,10 +10,10 @@ export const Route = createFileRoute("/backtest")({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "Backtest the AI signal strategy | Quantra" },
-      { name: "description", content: "Replay Quantra's quant signals on years of historical prices and compare against buy-and-hold." },
-      { property: "og:title", content: "Backtest the AI signal strategy | Quantra" },
-      { property: "og:description", content: "Replay Quantra's quant signals on years of historical prices and compare against buy-and-hold." },
+      { title: "Historiktest av signalstrategin | StockLab" },
+      { name: "description", content: "Testa StockLabs signaler på flera års historiska kurser och jämför med att köpa och behålla." },
+      { property: "og:title", content: "Historiktest av signalstrategin | StockLab" },
+      { property: "og:description", content: "Testa StockLabs signaler på flera års historiska kurser och jämför med att köpa och behålla." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -34,7 +34,7 @@ function Backtest() {
     setBusy(true); setErr("");
     const r = await run({ data: { ...f, symbol: f.symbol.toUpperCase() } });
     setBusy(false);
-    if (r.error || !r.result) { setErr(r.error ?? "Failed"); setRes(null); } else setRes(r.result);
+    if (r.error || !r.result) { setErr(r.error ?? "Misslyckades"); setRes(null); } else setRes(r.result);
   }
   const num = (k: keyof typeof f, label: string) => (
     <label className="grid gap-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}
@@ -45,29 +45,29 @@ function Backtest() {
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="text-2xl font-bold">Backtest</h1>
-        <p className="text-sm text-muted-foreground">Replays the exact scoring model the scanner uses, day by day on historical closes (no look-ahead), with 0.05% cost per trade. Starts with $10,000.</p>
+        <h1 className="text-2xl font-bold">Historiktest</h1>
+        <p className="text-sm text-muted-foreground">Kör samma poängmodell som skannern dag för dag på historiska stängningskurser (utan framtidsdata), med 0,05 % kostnad per affär. Startkapital 10 000 USD.</p>
       </div>
       <form onSubmit={go} className="flex flex-wrap items-end gap-3 rounded-lg border border-border bg-card p-4">
         <label className="grid gap-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Ticker
           <input value={f.symbol} onChange={(e) => setF({ ...f, symbol: e.target.value })} className="w-32 rounded-md border border-input bg-background px-2 py-1.5 text-sm uppercase text-foreground" />
         </label>
-        {num("years", "Years")}{num("entry", "Buy score ≥")}{num("exit", "Sell score <")}{num("stopLoss", "Stop-loss %")}{num("takeProfit", "Take-profit %")}
-        <button disabled={busy} className="rounded-md bg-primary px-4 py-2 font-mono text-sm font-semibold text-primary-foreground disabled:opacity-50">{busy ? "Running…" : "Run backtest"}</button>
+        {num("years", "År")}{num("entry", "Köp vid poäng ≥")}{num("exit", "Sälj vid poäng <")}{num("stopLoss", "Stop-loss %")}{num("takeProfit", "Vinstmål %")}
+        <button disabled={busy} className="rounded-md bg-primary px-4 py-2 font-mono text-sm font-semibold text-primary-foreground disabled:opacity-50">{busy ? "Kör…" : "Kör test"}</button>
       </form>
       {err && <div className="text-sm text-bear">{err}</div>}
       {res && st && (
         <>
           <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
             {[
-              ["Strategy return", signed(st.strategyReturn, 1), st.strategyReturn],
-              ["Buy & hold", signed(st.holdReturn, 1), st.holdReturn],
-              ["Strategy CAGR", signed(st.strategyCagr, 1), st.strategyCagr],
-              ["Hold CAGR", signed(st.holdCagr, 1), st.holdCagr],
-              ["Max drawdown", `-${fmt(st.maxDrawdown, 1)}%`, -1],
-              ["Hold drawdown", `-${fmt(st.holdDrawdown, 1)}%`, -1],
-              ["Trades / win rate", `${st.trades} / ${fmt(st.winRate, 0)}%`, null],
-              ["Avg trade", signed(st.avgTrade, 1), st.avgTrade],
+              ["Strategins avkastning", signed(st.strategyReturn, 1), st.strategyReturn],
+              ["Köp och behåll", signed(st.holdReturn, 1), st.holdReturn],
+              ["Strategins årstakt", signed(st.strategyCagr, 1), st.strategyCagr],
+              ["Behåll årstakt", signed(st.holdCagr, 1), st.holdCagr],
+              ["Största nedgång", `-${fmt(st.maxDrawdown, 1)}%`, -1],
+              ["Behåll nedgång", `-${fmt(st.holdDrawdown, 1)}%`, -1],
+              ["Affärer / träffsäkerhet", `${st.trades} / ${fmt(st.winRate, 0)}%`, null],
+              ["Snittaffär", signed(st.avgTrade, 1), st.avgTrade],
             ].map(([k, v, n]) => (
               <div key={k as string} className="bg-card p-4">
                 <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{k}</div>
@@ -84,15 +84,15 @@ function Backtest() {
                   <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} width={60} />
                   <Tooltip contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)" }} formatter={(v: number) => `$${fmt(v, 0)}`} />
                   <Legend />
-                  <Line dataKey="strat" name="Signal strategy" stroke="var(--primary)" dot={false} strokeWidth={2} />
-                  <Line dataKey="hold" name="Buy & hold" stroke="var(--muted-foreground)" dot={false} strokeWidth={1.5} />
+                  <Line dataKey="strat" name="Signalstrategi" stroke="var(--primary)" dot={false} strokeWidth={2} />
+                  <Line dataKey="hold" name="Köp och behåll" stroke="var(--muted-foreground)" dot={false} strokeWidth={1.5} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </Card>
-          <Card title="Trades (latest 50)">
+          <Card title="Affärer (senaste 50)">
             <table className="w-full font-mono text-xs">
-              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-4 py-2">Entry</th><th>Exit</th><th className="text-right">In</th><th className="text-right">Out</th><th className="text-right">Return</th><th className="px-4">Exit reason</th></tr></thead>
+              <thead className="text-left text-[10px] uppercase text-muted-foreground"><tr className="border-b border-border"><th className="px-4 py-2">Köp</th><th>Sälj</th><th className="text-right">In</th><th className="text-right">Ut</th><th className="text-right">Avkastning</th><th className="px-4">Säljorsak</th></tr></thead>
               <tbody>
                 {res.trades.map((t) => (
                   <tr key={t.entry} className="border-b border-border/50">
@@ -104,7 +104,7 @@ function Backtest() {
               </tbody>
             </table>
           </Card>
-          <p className="text-xs text-muted-foreground">Past performance does not guarantee future results. Backtests ignore taxes, dividends and liquidity limits.</p>
+          <p className="text-xs text-muted-foreground">Historisk avkastning är ingen garanti för framtida avkastning. Testerna bortser från skatt, utdelningar och likviditet.</p>
         </>
       )}
     </div>
