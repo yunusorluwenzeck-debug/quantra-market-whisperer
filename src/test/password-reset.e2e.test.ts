@@ -3,9 +3,9 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { createClient } from "@supabase/supabase-js";
 
-const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
-const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const pub = process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_PUBLISHABLE_KEY;
+const url = process.env['SUPABASE_URL'] ?? process.env['VITE_SUPABASE_URL'];
+const service = process.env['SUPABASE_SERVICE_ROLE_KEY'];
+const pub = process.env['VITE_SUPABASE_PUBLISHABLE_KEY'] ?? process.env['SUPABASE_PUBLISHABLE_KEY'];
 const run = url && service && pub ? describe : describe.skip;
 
 run("password reset flow", () => {
