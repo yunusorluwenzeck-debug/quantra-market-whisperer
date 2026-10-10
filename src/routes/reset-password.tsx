@@ -29,7 +29,7 @@ function ResetPassword() {
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password: pw });
     setBusy(false);
-    if (error) return toast.error("Länken är ogiltig eller har gått ut. Begär en ny.");
+    if (error) { toast.error("Länken är ogiltig eller har gått ut. Begär en ny."); return; }
     toast.success("Lösenordet är uppdaterat.");
     nav({ to: "/portfolio" });
   }

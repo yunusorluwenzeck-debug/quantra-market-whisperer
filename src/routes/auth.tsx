@@ -95,7 +95,7 @@ function AuthPage() {
       {mode === "in" && (
         <button
           onClick={async () => {
-            if (!email) return toast.error("Skriv in din e-post först.");
+            if (!email) { toast.error("Skriv in din e-post först."); return; }
             const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
             if (error) toast.error("Kunde inte skicka återställningslänken.");
             else toast.success("Om kontot finns har vi skickat en återställningslänk.");
