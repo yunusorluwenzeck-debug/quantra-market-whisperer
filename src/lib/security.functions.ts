@@ -128,7 +128,7 @@ export const getSecurityStatus = createServerFn({ method: "POST" })
     // 6. Things the app cannot verify itself — reported honestly
     checks.push({ id: "backups", label: "Database backups", status: "info", detail: "Automatic, encrypted backups are managed by Lovable Cloud. Restore drills cannot be run or verified from inside the app." });
     checks.push({ id: "secrets", label: "Secret keys kept off the browser", status: "info", detail: "Enforced by code structure (server-only modules). Not re-scanned on this page." });
-    checks.push({ id: "ratelimit", label: "Request rate limiting", status: "warn", detail: "Only background jobs are rate-limited. There is no per-user request throttling." });
+    checks.push({ id: "ratelimit", label: "Request rate limiting", status: "pass", detail: "Hourly per-user limits on trades, autopilot, settings, resets and test emails; per-visitor and app-wide limits on public sign-in endpoints." });
 
     // 7. Sign-in requests blocked by rate limits, grouped by endpoint and period
     const { data: rl } = await supabaseAdmin.from("security_events").select("detail,created_at").eq("kind", "public_rate_limited").gte("created_at", since).limit(5000);
