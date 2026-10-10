@@ -37,3 +37,33 @@ export function levelOf(xp: number) {
   while (xp >= xpForLevel(level + 1)) level++;
   return { level, current: xp - xpForLevel(level), needed: xpForLevel(level + 1) - xpForLevel(level) };
 }
+
+/** Career titles unlock through learning and sound habits — never through trading volume or raw returns. */
+export type CareerInput = { xp: number; achievements: Set<string>; missions: number };
+export const CAREER: { title: string; unlock: string; badge: string; reqs: { label: string; ok: (c: CareerInput) => boolean }[] }[] = [
+  { title: "Nybörjare", badge: "🌱", unlock: "Grundlektionerna", reqs: [] },
+  { title: "Sparare", badge: "💰", unlock: "Märket Sparare", reqs: [
+    { label: "Klara 1 lärandeuppdrag", ok: (c) => c.missions >= 1 },
+    { label: "Gör din första virtuella affär", ok: (c) => c.achievements.has("first_trade") } ] },
+  { title: "Fondutforskare", badge: "🧭", unlock: "Fondutmaningar", reqs: [
+    { label: "Klara 2 lärandeuppdrag", ok: (c) => c.missions >= 2 },
+    { label: "Äg minst en fond", ok: (c) => c.achievements.has("fund_owner") } ] },
+  { title: "Marknadsanalytiker", badge: "📊", unlock: "Analysverktyg i fokus", reqs: [
+    { label: "Klara 3 lärandeuppdrag", ok: (c) => c.missions >= 3 },
+    { label: "Skapa en egen bevakningslista", ok: (c) => c.achievements.has("list_made") },
+    { label: "Sätt ett kurslarm", ok: (c) => c.achievements.has("alert_set") } ] },
+  { title: "Portföljstrateg", badge: "🧩", unlock: "Märket Strateg", reqs: [
+    { label: "Klara alla lärandeuppdrag", ok: (c) => c.missions >= MISSIONS.length },
+    { label: "Äg minst 5 olika innehav samtidigt", ok: (c) => c.achievements.has("diversified") } ] },
+  { title: "Riskexpert", badge: "🛡️", unlock: "Märket Riskexpert", reqs: [
+    { label: "Sälj ett innehav med vinst", ok: (c) => c.achievements.has("profit") },
+    { label: "Nå 600 XP", ok: (c) => c.xp >= 600 } ] },
+  { title: "Investeringsmästare", badge: "🏆", unlock: "Mästarmärket", reqs: [
+    { label: "Nå 800 XP", ok: (c) => c.xp >= 800 } ] },
+];
+/** Index of the highest career level whose requirements (and all earlier ones) are met. */
+export function careerLevel(c: CareerInput) {
+  let i = 0;
+  while (i + 1 < CAREER.length && CAREER[i + 1]!.reqs.every((r) => r.ok(c))) i++;
+  return i;
+}
