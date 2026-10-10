@@ -26,6 +26,15 @@ export const Route = createFileRoute("/fonder")({
 
 const CATS = ["Alla", "Global index", "Sverige index", "Teknik", "Tillväxtmarknader", "Räntor", "Blandfond"] as const;
 
+function fmtDelay(marketTime: number | null, fetchedAt: number) {
+  if (!marketTime) return "okänd fördröjning";
+  const min = Math.max(0, Math.round((fetchedAt - marketTime) / 60_000));
+  if (min < 1) return "utan märkbar fördröjning";
+  if (min < 60) return `ca ${min} min fördröjd`;
+  const h = Math.floor(min / 60);
+  return h < 24 ? `ca ${h} tim fördröjd (börsen kan vara stängd)` : "börsen stängd — senaste stängningskurs";
+}
+
 const LEARN = [
   ["Spridning", "En fond äger många bolag. Går ett bolag dåligt påverkar det bara en liten del av dina pengar."],
   ["Avgifter", "Avgiften dras varje år. 1 % i stället för 0,1 % kan äta upp en stor del av vinsten på 30 år."],
