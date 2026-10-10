@@ -5,7 +5,6 @@ import { fetchStock } from "./market.server";
 import { currencyOf, fxRates } from "./scanner.server";
 import { runBotForUser } from "./bot.server";
 import { runBacktest } from "./backtest.server";
-import { isOwner, NOT_OWNER } from "./owner";
 
 export const placeOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
