@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BacktestRouteImport } from './routes/backtest'
 import { Route as ScreenerRouteImport } from './routes/screener'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
 import { Route as AuthenticatedAutopilotRouteImport } from './routes/_authenticated/autopilot'
 import { Route as AuthenticatedListsRouteImport } from './routes/_authenticated/lists'
@@ -45,6 +46,11 @@ const BacktestRoute = BacktestRouteImport.update({
 const ScreenerRoute = ScreenerRouteImport.update({
   id: '/screener',
   path: '/screener',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAlertsRoute = AuthenticatedAlertsRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
   '/screener': typeof ScreenerRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alerts': typeof AuthenticatedAlertsRoute
   '/autopilot': typeof AuthenticatedAutopilotRoute
   '/lists': typeof AuthenticatedListsRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
   '/screener': typeof ScreenerRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alerts': typeof AuthenticatedAlertsRoute
   '/autopilot': typeof AuthenticatedAutopilotRoute
   '/lists': typeof AuthenticatedListsRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
   '/screener': typeof ScreenerRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/autopilot': typeof AuthenticatedAutopilotRoute
   '/_authenticated/lists': typeof AuthenticatedListsRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/backtest'
     | '/screener'
+    | '/sitemap.xml'
     | '/alerts'
     | '/autopilot'
     | '/lists'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/backtest'
     | '/screener'
+    | '/sitemap.xml'
     | '/alerts'
     | '/autopilot'
     | '/lists'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/backtest'
     | '/screener'
+    | '/sitemap.xml'
     | '/_authenticated/alerts'
     | '/_authenticated/autopilot'
     | '/_authenticated/lists'
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BacktestRoute: typeof BacktestRoute
   ScreenerRoute: typeof ScreenerRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiAnalyzeRoute: typeof ApiAnalyzeRoute
   StockSymbolRoute: typeof StockSymbolRoute
   ApiPublicHooksAutotradeRoute: typeof ApiPublicHooksAutotradeRoute
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       path: '/screener'
       fullPath: '/screener'
       preLoaderRoute: typeof ScreenerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/alerts': {
@@ -309,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BacktestRoute: BacktestRoute,
   ScreenerRoute: ScreenerRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiAnalyzeRoute: ApiAnalyzeRoute,
   StockSymbolRoute: StockSymbolRoute,
   ApiPublicHooksAutotradeRoute: ApiPublicHooksAutotradeRoute,

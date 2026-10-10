@@ -13,3 +13,4 @@
 - [ ] SEO review
 - [ ] Funds & ETF analysis, alerts, autopilot (spec 11)
 - [ ] Avanza integration (spec 12) — needs verification of official API
+- [ ] E2E tests: two real accounts, email alert settings access
