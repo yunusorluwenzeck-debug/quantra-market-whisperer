@@ -15,3 +15,6 @@
 - All paper trades go through the `execute_paper_trade` SQL function (service_role only) — keeps cash/position updates atomic and blocks client tampering.
 - Paper accounts are USD; non-USD stocks are converted with live FX at trade time (GBp = pence/100).
 - Real-money trading is not implemented; never label simulated trades as real.
+- Security-relevant actions are logged via `logEvent` in src/lib/security.server.ts into `security_events` (server-written, secrets scrubbed) — gives an audit trail without trusting the browser.
+- Email-panel owner logic lives in src/lib/email-panel.server.ts with injectable deps — lets tests prove non-owners never reach privileged calls.
+- Manual orders carry a one-time `clientKey` claimed in `order_keys` before trading — blocks double-submits and replays.
