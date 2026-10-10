@@ -9,7 +9,7 @@ import { claimOrderKey, logEvent, safeError, takeRateSlot, RATE_LIMITED } from "
 
 export const placeOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ symbol: z.string().min(1).max(15), side: z.enum(["buy", "sell"]), amountUsd: z.number().positive().max(10_000_000).optional(), qty: z.number().positive().optional(), clientKey: z.string().uuid().optional() }).parse(d))
+  .inputValidator((d) => z.object({ symbol: z.string().regex(/^[A-Za-z0-9.\-^=]{1,15}$/), side: z.enum(["buy", "sell"]), amountUsd: z.number().positive().max(10_000_000).optional(), qty: z.number().positive().optional(), clientKey: z.string().uuid().optional() }).parse(d))
   .handler(async ({ data, context }) => {
     try {
       if (!(await takeRateSlot(context.userId, "order"))) return { ok: false, error: RATE_LIMITED };
@@ -100,7 +100,7 @@ export const resetPaperAccount = createServerFn({ method: "POST" })
   });
 
 export const backtest = createServerFn({ method: "POST" })
-  .inputValidator((d) => z.object({ symbol: z.string().max(15), years: z.number().int().min(1).max(10), entry: z.number().min(40).max(100), exit: z.number().min(0).max(90), stopLoss: z.number().min(1).max(90), takeProfit: z.number().min(1).max(1000) }).parse(d))
+  .inputValidator((d) => z.object({ symbol: z.string().regex(/^[A-Za-z0-9.\-^=]{1,15}$/), years: z.number().int().min(1).max(10), entry: z.number().min(40).max(100), exit: z.number().min(0).max(90), stopLoss: z.number().min(1).max(90), takeProfit: z.number().min(1).max(1000) }).parse(d))
   .handler(async ({ data }) => {
     try {
       return { result: await runBacktest(data), error: null };

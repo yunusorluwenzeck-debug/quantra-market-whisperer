@@ -4,7 +4,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { checkSignInLock, reportFailedSignIn, reportOauthFailure } from "@/lib/security.functions";
+import { passwordSignIn, reportOauthFailure } from "@/lib/security.functions";
 
 const safePath = (p?: string) => (p && p.startsWith("/") && !p.startsWith("//") ? p : "/portfolio");
 
@@ -48,16 +48,10 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "in") {
-        const lock = await checkSignInLock({ data: { email } }).catch(() => ({ lockedUntil: null }));
-        if (lock.lockedUntil) throw new Error(`Too many failed attempts. This account is temporarily locked until ${new Date(lock.lockedUntil).toLocaleTimeString()}.`);
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          if (/invalid login/i.test(error.message)) {
-            const r = await reportFailedSignIn({ data: { email } }).catch(() => ({ locked: false }));
-            if (r.locked) throw new Error("Too many failed attempts. This account is temporarily locked for 30 minutes.");
-          }
-          throw error;
-        }
+        const r = await passwordSignIn({ data: { email, password } });
+        if (r.error || !r.session) throw new Error(r.error ?? "Sign-in failed");
+        const { error } = await supabase.auth.setSession(r.session);
+        if (error) throw error;
         nav({ to: safePath(redirect) });
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}${safePath(redirect)}` } });
