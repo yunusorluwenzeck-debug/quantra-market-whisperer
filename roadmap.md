@@ -15,3 +15,4 @@
 - [ ] Avanza integration (spec 12) — needs verification of official API
 - [ ] E2E tests: two real accounts — written; blocked: needs a second real account
 - [ ] Security & privacy hardening (spec 13)
+- [ ] Tests: non-owners cannot view/change/send test email
