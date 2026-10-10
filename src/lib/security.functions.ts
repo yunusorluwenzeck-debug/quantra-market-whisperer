@@ -40,6 +40,14 @@ export const reportFailedSignIn = createServerFn({ method: "POST" })
     return g.recordFailure(await g.hashEmail(data.email), await country());
   });
 
+/** Public: records a failed OAuth (e.g. Google) sign-in attempt; alerts the owner on repeats. */
+export const reportOauthFailure = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ provider: z.enum(["google", "apple", "microsoft"]) }).parse(d))
+  .handler(async ({ data }) => {
+    const g = await import("./oauth-guard.server");
+    return g.recordOauthFailure(data.provider, await country());
+  });
+
 export const getSecurityStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -91,8 +99,10 @@ export const getSecurityStatus = createServerFn({ method: "POST" })
     const since = new Date(Date.now() - 7 * 86400_000).toISOString();
     const { count: denied } = await supabaseAdmin.from("security_events").select("id", { count: "exact", head: true }).eq("kind", "owner_check_denied").gte("created_at", since);
     const { count: dupes } = await supabaseAdmin.from("security_events").select("id", { count: "exact", head: true }).eq("kind", "duplicate_order_blocked").gte("created_at", since);
-    checks.push({ id: "activity", label: "Blocked access attempts (7 days)", status: (denied ?? 0) > 0 ? "warn" : "pass",
-      detail: `${denied ?? 0} owner-only requests refused · ${dupes ?? 0} duplicate orders blocked` });
+    const { count: oauthFails } = await supabaseAdmin.from("security_events").select("id", { count: "exact", head: true }).eq("kind", "oauth_sign_in_failed").gte("created_at", since);
+    const { count: oauthSusp } = await supabaseAdmin.from("security_events").select("id", { count: "exact", head: true }).eq("kind", "oauth_sign_in_suspicious").gte("created_at", since);
+    checks.push({ id: "activity", label: "Blocked access attempts (7 days)", status: (denied ?? 0) > 0 || (oauthSusp ?? 0) > 0 ? "warn" : "pass",
+      detail: `${denied ?? 0} owner-only requests refused · ${dupes ?? 0} duplicate orders blocked · ${oauthFails ?? 0} failed Google sign-ins (${oauthSusp ?? 0} flagged suspicious)` });
 
     // 6. Things the app cannot verify itself — reported honestly
     checks.push({ id: "backups", label: "Database backups", status: "info", detail: "Automatic, encrypted backups are managed by Lovable Cloud. Restore drills cannot be run or verified from inside the app." });
