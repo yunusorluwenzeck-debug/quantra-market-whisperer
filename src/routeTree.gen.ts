@@ -19,6 +19,8 @@ import { Route as ScreenerRouteImport } from './routes/screener'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
 import { Route as AuthenticatedAutopilotRouteImport } from './routes/_authenticated/autopilot'
+import { Route as AuthenticatedCareerRouteImport } from './routes/_authenticated/career'
+import { Route as AuthenticatedLeaguesRouteImport } from './routes/_authenticated/leagues'
 import { Route as AuthenticatedListsRouteImport } from './routes/_authenticated/lists'
 import { Route as AuthenticatedPortfolioRouteImport } from './routes/_authenticated/portfolio'
 import { Route as AuthenticatedProgressRouteImport } from './routes/_authenticated/progress'
@@ -77,6 +79,16 @@ const AuthenticatedAutopilotRoute = AuthenticatedAutopilotRouteImport.update({
   path: '/autopilot',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCareerRoute = AuthenticatedCareerRouteImport.update({
+  id: '/career',
+  path: '/career',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLeaguesRoute = AuthenticatedLeaguesRouteImport.update({
+  id: '/leagues',
+  path: '/leagues',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedListsRoute = AuthenticatedListsRouteImport.update({
   id: '/lists',
   path: '/lists',
@@ -128,6 +140,8 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alerts': typeof AuthenticatedAlertsRoute
   '/autopilot': typeof AuthenticatedAutopilotRoute
+  '/career': typeof AuthenticatedCareerRoute
+  '/leagues': typeof AuthenticatedLeaguesRoute
   '/lists': typeof AuthenticatedListsRoute
   '/portfolio': typeof AuthenticatedPortfolioRoute
   '/progress': typeof AuthenticatedProgressRoute
@@ -147,6 +161,8 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alerts': typeof AuthenticatedAlertsRoute
   '/autopilot': typeof AuthenticatedAutopilotRoute
+  '/career': typeof AuthenticatedCareerRoute
+  '/leagues': typeof AuthenticatedLeaguesRoute
   '/lists': typeof AuthenticatedListsRoute
   '/portfolio': typeof AuthenticatedPortfolioRoute
   '/progress': typeof AuthenticatedProgressRoute
@@ -168,6 +184,8 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/autopilot': typeof AuthenticatedAutopilotRoute
+  '/_authenticated/career': typeof AuthenticatedCareerRoute
+  '/_authenticated/leagues': typeof AuthenticatedLeaguesRoute
   '/_authenticated/lists': typeof AuthenticatedListsRoute
   '/_authenticated/portfolio': typeof AuthenticatedPortfolioRoute
   '/_authenticated/progress': typeof AuthenticatedProgressRoute
@@ -189,6 +207,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/alerts'
     | '/autopilot'
+    | '/career'
+    | '/leagues'
     | '/lists'
     | '/portfolio'
     | '/progress'
@@ -208,6 +228,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/alerts'
     | '/autopilot'
+    | '/career'
+    | '/leagues'
     | '/lists'
     | '/portfolio'
     | '/progress'
@@ -228,6 +250,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/alerts'
     | '/_authenticated/autopilot'
+    | '/_authenticated/career'
+    | '/_authenticated/leagues'
     | '/_authenticated/lists'
     | '/_authenticated/portfolio'
     | '/_authenticated/progress'
@@ -325,6 +349,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAutopilotRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/career': {
+      id: '/_authenticated/career'
+      path: '/career'
+      fullPath: '/career'
+      preLoaderRoute: typeof AuthenticatedCareerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/leagues': {
+      id: '/_authenticated/leagues'
+      path: '/leagues'
+      fullPath: '/leagues'
+      preLoaderRoute: typeof AuthenticatedLeaguesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/lists': {
       id: '/_authenticated/lists'
       path: '/lists'
@@ -387,6 +425,8 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
   AuthenticatedAutopilotRoute: typeof AuthenticatedAutopilotRoute
+  AuthenticatedCareerRoute: typeof AuthenticatedCareerRoute
+  AuthenticatedLeaguesRoute: typeof AuthenticatedLeaguesRoute
   AuthenticatedListsRoute: typeof AuthenticatedListsRoute
   AuthenticatedPortfolioRoute: typeof AuthenticatedPortfolioRoute
   AuthenticatedProgressRoute: typeof AuthenticatedProgressRoute
@@ -396,6 +436,8 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
   AuthenticatedAutopilotRoute: AuthenticatedAutopilotRoute,
+  AuthenticatedCareerRoute: AuthenticatedCareerRoute,
+  AuthenticatedLeaguesRoute: AuthenticatedLeaguesRoute,
   AuthenticatedListsRoute: AuthenticatedListsRoute,
   AuthenticatedPortfolioRoute: AuthenticatedPortfolioRoute,
   AuthenticatedProgressRoute: AuthenticatedProgressRoute,
