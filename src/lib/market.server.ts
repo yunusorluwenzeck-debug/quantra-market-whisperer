@@ -6,6 +6,7 @@ export type StockData = {
   exchange: string;
   price: number;
   prevClose: number;
+  marketTime: number | null; // ms epoch of last price update
   change: number;
   changePct: number;
   candles: Candle[];
@@ -63,6 +64,7 @@ export async function fetchStock(symbol: string): Promise<StockData> {
     exchange: r.meta.fullExchangeName ?? r.meta.exchangeName ?? "",
     price,
     prevClose,
+    marketTime: r.meta.regularMarketTime ? r.meta.regularMarketTime * 1000 : null,
     change: price - prevClose,
     changePct: ((price - prevClose) / prevClose) * 100,
     candles,
