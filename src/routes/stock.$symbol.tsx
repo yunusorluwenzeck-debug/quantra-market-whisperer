@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { StockDetail } from "@/components/StockDetail";
 
 export const Route = createFileRoute("/stock/$symbol")({
+  staticData: { sitemap: false },
   head: ({ params }) => ({
     meta: [
       { title: `${params.symbol.toUpperCase()} — AI analysis | Quantra` },

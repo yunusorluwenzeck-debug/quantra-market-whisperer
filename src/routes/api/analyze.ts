@@ -6,6 +6,7 @@ import { fetchStock } from "@/lib/market.server";
 const RUN = "X-Lovable-AIG-Run-ID";
 
 export const Route = createFileRoute("/api/analyze")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

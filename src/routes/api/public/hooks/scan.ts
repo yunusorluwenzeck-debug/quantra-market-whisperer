@@ -3,6 +3,7 @@ import { checkAlerts, runScan } from "@/lib/scanner.server";
 import { claimJob, hasBearer } from "@/lib/jobs.server";
 
 export const Route = createFileRoute("/api/public/hooks/scan")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

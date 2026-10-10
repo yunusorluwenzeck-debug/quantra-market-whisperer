@@ -6,6 +6,7 @@ import { Card } from "@/components/AppShell";
 import { fmt } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/alerts")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Price alerts | Quantra" },

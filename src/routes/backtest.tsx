@@ -7,6 +7,7 @@ import { Card } from "@/components/AppShell";
 import { fmt, signed, tone } from "@/lib/format";
 
 export const Route = createFileRoute("/backtest")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Backtest the AI signal strategy | Quantra" },
