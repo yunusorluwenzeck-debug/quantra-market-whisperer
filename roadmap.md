@@ -8,3 +8,7 @@
 - [x] Price alerts (in-app)
 - [x] Gmail 3-email opportunity sequence (enable on Autopilot page)
 - [ ] Real broker connection — blocked: user's broker choice + API keys
+
+- [ ] Payments: enable Stripe (paused — needs your go-ahead)
+- [ ] SEO review
+- [ ] Funds & ETF analysis, alerts, autopilot (spec 11)
