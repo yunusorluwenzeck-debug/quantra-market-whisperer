@@ -29,6 +29,7 @@ export function EmailAlerts() {
       <input type="number" value={f[k]} onChange={(e) => setF({ ...f, [k]: Number(e.target.value) })} className="rounded-md border border-input bg-background px-2 py-1.5 font-mono text-sm" />
     </label>
   );
+  if (data && !data.owner) return null;
   return (
     <Card title="Gmail opportunity alerts">
       <div className="grid gap-4 p-4 text-sm">
