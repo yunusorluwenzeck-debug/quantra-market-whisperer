@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { SaveBadge } from "@/components/SaveBadge";
+import { MfaGate } from "@/components/Mfa";
 
 const NAV = [
   { to: "/", label: "Översikt" },
@@ -45,6 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
   return (
     <div className="min-h-screen">
+      <MfaGate />
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3">
           <Link to="/" className="flex items-center gap-2">
