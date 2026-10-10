@@ -12,6 +12,11 @@ export const Route = createFileRoute("/api/analyze")({
       POST: async ({ request }) => {
         const apiKey = process.env["LOVABLE_API_KEY"];
         if (!apiKey) return Response.json({ error: "AI is not configured" }, { status: 500 });
+        const token = /^Bearer (\S+)$/.exec(request.headers.get("authorization") ?? "")?.[1];
+        if (!token) return Response.json({ error: "Sign in to run AI analysis." }, { status: 401 });
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: claims, error: authErr } = await supabaseAdmin.auth.getClaims(token);
+        if (authErr || !claims?.claims?.sub) return Response.json({ error: "Sign in to run AI analysis." }, { status: 401 });
         let symbol = "";
         try {
           symbol = String(((await request.json()) as { symbol?: string }).symbol ?? "");
@@ -20,7 +25,7 @@ export const Route = createFileRoute("/api/analyze")({
         try {
           s = await fetchStock(symbol);
         } catch (e) {
-          return Response.json({ error: e instanceof Error ? e.message : "Bad ticker" }, { status: 400 });
+          return Response.json({ error: e instanceof Error && /Invalid ticker|not found/.test(e.message) ? e.message : "Market data unavailable" }, { status: 400 });
         }
         const recent = s.candles.slice(-30).map((c) => `${new Date(c.t).toISOString().slice(0, 10)} ${c.c.toFixed(2)}`).join("\n");
         const f = (x: number | null, d = 2) => (x == null ? "n/a" : x.toFixed(d));

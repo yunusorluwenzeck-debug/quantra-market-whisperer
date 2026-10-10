@@ -200,7 +200,9 @@ function AiPanel({ symbol }: { symbol: string }) {
     abort.current = ac;
     setText(""); setErr(""); setState("loading");
     try {
-      const res = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ symbol }), signal: ac.signal });
+      const { data: sess } = await supabase.auth.getSession();
+      if (!sess.session) throw new Error("Sign in to run AI analysis.");
+      const res = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${sess.session.access_token}` }, body: JSON.stringify({ symbol }), signal: ac.signal });
       if (!res.ok || !res.body) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j.error ?? (res.status === 429 ? "Too many requests, try again shortly." : res.status === 402 ? "AI credits exhausted." : "Analysis failed"));
