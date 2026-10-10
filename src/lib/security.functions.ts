@@ -97,7 +97,7 @@ export const exportMyData = createServerFn({ method: "POST" })
       out[t] = data ?? [];
     }
     await logEvent(context.userId, "data_exported");
-    return out;
+    return JSON.stringify(out, null, 2);
   });
 
 export const deleteMyData = createServerFn({ method: "POST" })

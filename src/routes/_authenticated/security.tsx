@@ -38,7 +38,7 @@ function SecurityPage() {
 
   async function download() {
     const d = await doExport();
-    const blob = new Blob([JSON.stringify(d, null, 2)], { type: "application/json" });
+    const blob = new Blob([d], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `quantra-data-${new Date().toISOString().slice(0, 10)}.json`;
