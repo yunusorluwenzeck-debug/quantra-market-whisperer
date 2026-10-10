@@ -35,7 +35,7 @@ export function EmailAlerts() {
       <div className="grid gap-4 p-4 text-sm">
         <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
           <span>Connected Gmail: <b className={addr?.address ? "text-bull" : "text-bear"}>{addr?.address ?? addr?.error ?? "checking…"}</b></span>
-          <button onClick={async () => { const r = await test(); r.ok ? toast.success(`Test email sent to ${r.to}`) : toast.error(r.error ?? "Failed"); }} className="rounded border border-border px-2 py-1 hover:bg-accent">Send test email</button>
+          <button onClick={async () => { const r = await test(); r.ok ? toast.success(`Test email sent to ${"to" in r ? r.to : "your Gmail"}`) : toast.error(r.error ?? "Failed"); }} className="rounded border border-border px-2 py-1 hover:bg-accent">Send test email</button>
           <button onClick={() => { setF({ ...f, enabled: !f.enabled }); void submit({ enabled: !f.enabled }); }} className={`ml-auto rounded px-3 py-1.5 font-semibold ${f.enabled ? "border border-border" : "bg-primary text-primary-foreground"}`}>{f.enabled ? "Disable emails" : "Enable emails"}</button>
         </div>
         <p className="text-xs text-muted-foreground">For each new opportunity you get exactly three emails: detected, update, and final status — spaced apart, never all at once. The same unchanged signal never triggers a new sequence.</p>

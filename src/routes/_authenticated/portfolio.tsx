@@ -56,7 +56,7 @@ function Portfolio() {
           <h1 className="text-2xl font-bold">Paper portfolio <span className="ml-2 rounded border border-border px-2 py-0.5 align-middle font-mono text-[10px] text-muted-foreground">SIMULATED</span></h1>
           <p className="text-sm text-muted-foreground">Virtual money only. Prices in USD (European stocks converted at live exchange rates).</p>
         </div>
-        <button onClick={async () => { if (!confirm("Reset to $100,000 and clear all positions and trade history?")) return; await reset(); qc.invalidateQueries(); toast.success("Account reset"); }} className="rounded-md border border-border px-3 py-1.5 font-mono text-xs hover:bg-accent">Reset account</button>
+        <button onClick={async () => { if (!confirm("Reset to $100,000 and clear all positions and trade history?")) return; const r = await reset(); if (!r.ok) { toast.error("error" in r ? r.error : "Reset failed"); return; } qc.invalidateQueries(); toast.success("Account reset"); }} className="rounded-md border border-border px-3 py-1.5 font-mono text-xs hover:bg-accent">Reset account</button>
       </div>
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-5">
         {[["Equity", usd(equity), null], ["Total return", signed((equity / start - 1) * 100), equity - start], ["Cash", usd(cash), null], ["Unrealized P&L", usd(unreal), unreal], ["Realized P&L", usd(realized), realized]].map(([k, v, n]) => (
