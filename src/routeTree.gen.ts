@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BacktestRouteImport } from './routes/backtest'
 import { Route as FonderRouteImport } from './routes/fonder'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ScreenerRouteImport } from './routes/screener'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
@@ -48,6 +49,11 @@ const BacktestRoute = BacktestRouteImport.update({
 const FonderRoute = FonderRouteImport.update({
   id: '/fonder',
   path: '/fonder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScreenerRoute = ScreenerRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
   '/fonder': typeof FonderRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/screener': typeof ScreenerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alerts': typeof AuthenticatedAlertsRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
   '/fonder': typeof FonderRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/screener': typeof ScreenerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alerts': typeof AuthenticatedAlertsRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
   '/fonder': typeof FonderRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/screener': typeof ScreenerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/backtest'
     | '/fonder'
+    | '/reset-password'
     | '/screener'
     | '/sitemap.xml'
     | '/alerts'
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/backtest'
     | '/fonder'
+    | '/reset-password'
     | '/screener'
     | '/sitemap.xml'
     | '/alerts'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/backtest'
     | '/fonder'
+    | '/reset-password'
     | '/screener'
     | '/sitemap.xml'
     | '/_authenticated/alerts'
@@ -220,6 +232,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BacktestRoute: typeof BacktestRoute
   FonderRoute: typeof FonderRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ScreenerRoute: typeof ScreenerRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiAnalyzeRoute: typeof ApiAnalyzeRoute
@@ -263,6 +276,13 @@ declare module '@tanstack/react-router' {
       path: '/fonder'
       fullPath: '/fonder'
       preLoaderRoute: typeof FonderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/screener': {
@@ -370,6 +390,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BacktestRoute: BacktestRoute,
   FonderRoute: FonderRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ScreenerRoute: ScreenerRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiAnalyzeRoute: ApiAnalyzeRoute,

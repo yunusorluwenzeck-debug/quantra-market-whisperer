@@ -92,6 +92,19 @@ function AuthPage() {
       <button onClick={() => setMode(mode === "in" ? "up" : "in")} className="mt-4 w-full text-center text-xs text-muted-foreground hover:text-foreground">
         {mode === "in" ? "Inget konto? Registrera dig" : "Har du konto? Logga in"}
       </button>
+      {mode === "in" && (
+        <button
+          onClick={async () => {
+            if (!email) { toast.error("Skriv in din e-post först."); return; }
+            const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+            if (error) toast.error("Kunde inte skicka återställningslänken.");
+            else toast.success("Om kontot finns har vi skickat en återställningslänk.");
+          }}
+          className="mt-2 w-full text-center text-xs text-muted-foreground hover:text-foreground"
+        >
+          Glömt lösenordet?
+        </button>
+      )}
     </div>
   );
 }
