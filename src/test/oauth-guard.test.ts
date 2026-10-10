@@ -5,7 +5,7 @@ function deps(recentCount: number) {
   return {
     now: () => 1_000_000,
     countRecent: vi.fn(async () => recentCount),
-    notify: vi.fn(async () => {}),
+    notify: vi.fn(async (_subject: string, _body: string) => {}),
     log: vi.fn(async () => {}),
   };
 }
