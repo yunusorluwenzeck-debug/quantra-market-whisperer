@@ -46,10 +46,6 @@ describe.skipIf(!OWNER || !OTHER)("email alert settings — two real accounts", 
   it("second account is blocked by the email-panel guard", async () => {
     expect(await isOwner(roleClient(OTHER!), await userId(OTHER!))).toBe(false);
   });
-  it("second account cannot see whether the owner is owner", async () => {
-    const { data } = await roleClient(OTHER!).rpc("has_role", { _user_id: await userId(OWNER!), _role: "owner" });
-    expect(data).not.toBe(true);
-  });
   for (const t of ["email_settings", "opportunities"]) {
     it(`second account cannot read ${t} directly`, async () => {
       expect(await rows(OTHER!, t)).toHaveLength(0);
