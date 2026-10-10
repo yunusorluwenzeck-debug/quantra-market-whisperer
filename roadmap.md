@@ -12,3 +12,4 @@
 - [ ] Payments: enable Stripe (paused — needs your go-ahead)
 - [ ] SEO review
 - [ ] Funds & ETF analysis, alerts, autopilot (spec 11)
+- [ ] Avanza integration (spec 12) — needs verification of official API
