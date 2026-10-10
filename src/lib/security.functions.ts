@@ -40,6 +40,14 @@ export const reportFailedSignIn = createServerFn({ method: "POST" })
     return g.recordFailure(await g.hashEmail(data.email), await country());
   });
 
+/** Public: records a failed OAuth (e.g. Google) sign-in attempt; alerts the owner on repeats. */
+export const reportOauthFailure = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ provider: z.enum(["google", "apple", "microsoft"]) }).parse(d))
+  .handler(async ({ data }) => {
+    const g = await import("./oauth-guard.server");
+    return g.recordOauthFailure(data.provider, await country());
+  });
+
 export const getSecurityStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
