@@ -18,3 +18,4 @@
 - [x] Tests: non-owners cannot view/change/send test email
 - [ ] Final audit & polish (spec: FINAL_TASK)
 - [x] Suspicious sign-in protection: temporary lock + owner email notification
+- [ ] Per-user request limits — blocked: needs your OK on a custom (non-standard) approach
