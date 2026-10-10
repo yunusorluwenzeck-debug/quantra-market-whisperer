@@ -134,6 +134,21 @@ export type Database = {
         }
         Relationships: []
       }
+      cron_tokens: {
+        Row: {
+          name: string
+          token: string
+        }
+        Insert: {
+          name: string
+          token: string
+        }
+        Update: {
+          name?: string
+          token?: string
+        }
+        Relationships: []
+      }
       email_settings: {
         Row: {
           enabled: boolean
@@ -559,6 +574,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      verify_cron_token: { Args: { _token: string }; Returns: boolean }
     }
     Enums: {
       app_role: "owner" | "user"
