@@ -32,7 +32,7 @@ export async function lockedUntil(emailHash: string): Promise<string | null> {
     .eq("kind", "account_locked").eq("detail->>email_hash", emailHash).gte("created_at", since)
     .order("created_at", { ascending: false }).limit(1);
   if (!data?.length) return null;
-  return new Date(new Date(data[0].created_at).getTime() + LOCK_MIN * 60_000).toISOString();
+  return new Date(new Date(data[0]!.created_at).getTime() + LOCK_MIN * 60_000).toISOString();
 }
 
 export async function recordFailure(emailHash: string, country: string | null) {
