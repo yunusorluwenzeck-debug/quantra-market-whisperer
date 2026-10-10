@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Card } from "@/components/AppShell";
+import { MfaSettings } from "@/components/Mfa";
 import { deleteMyData, exportMyData, getSecurityStatus } from "@/lib/security.functions";
 
 export const Route = createFileRoute("/_authenticated/security")({
@@ -56,6 +57,8 @@ function SecurityPage() {
         <h1 className="text-2xl font-bold">Säkerhet och integritet</h1>
         <p className="text-sm text-muted-foreground">Varje resultat nedan kommer från en kontroll som körs på servern när du öppnar sidan. Inget system är helt säkert — här ser du vad som skyddas, vad som godkänts och vad som fortfarande är begränsat.</p>
       </div>
+
+      <MfaSettings />
 
       {data && !data.owner && (
         <Card title="Säkerhetskontroller"><p className="text-sm text-muted-foreground">Bara kontoägaren ser säkerhetskontrollerna. Dina datainställningar finns nedan.</p></Card>

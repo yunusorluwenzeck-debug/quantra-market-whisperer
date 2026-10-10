@@ -29,4 +29,4 @@
 - [x] Save status (Sparar/Sparat/Offline/Misslyckades) + safe trade retries
 - [x] XP, levels, achievements, learning missions (Framsteg page)
 - [x] Password reset page + automated end-to-end test
-- [ ] Optional MFA — not started
+- [x] Optional MFA (authenticator app, on Säkerhet page)
