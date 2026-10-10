@@ -12,7 +12,7 @@ if (typeof window !== "undefined") {
 
 /** Wraps a server save. Only reports "saved" when the server confirms success. */
 export async function trackSave<T extends { ok: boolean }>(fn: () => Promise<T>): Promise<T | { ok: false; error: string; network: true }> {
-  if (typeof navigator !== "undefined" && !navigator.onLine) { set("offline"); return { ok: false, error: "Du är offline — inget sparades. Försök igen när du är ansluten." }; }
+  if (typeof navigator !== "undefined" && !navigator.onLine) { set("offline"); return { ok: false, error: "Du är offline — inget sparades. Försök igen när du är ansluten.", network: true as const }; }
   set("saving");
   try {
     const r = await fn();

@@ -21,6 +21,7 @@ import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAutopilotRouteImport } from './routes/_authenticated/autopilot'
 import { Route as AuthenticatedListsRouteImport } from './routes/_authenticated/lists'
 import { Route as AuthenticatedPortfolioRouteImport } from './routes/_authenticated/portfolio'
+import { Route as AuthenticatedProgressRouteImport } from './routes/_authenticated/progress'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated/security'
 import { Route as ApiAnalyzeRouteImport } from './routes/api/analyze'
 import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
@@ -86,6 +87,11 @@ const AuthenticatedPortfolioRoute = AuthenticatedPortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProgressRoute = AuthenticatedProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
   id: '/security',
   path: '/security',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/autopilot': typeof AuthenticatedAutopilotRoute
   '/lists': typeof AuthenticatedListsRoute
   '/portfolio': typeof AuthenticatedPortfolioRoute
+  '/progress': typeof AuthenticatedProgressRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/autopilot': typeof AuthenticatedAutopilotRoute
   '/lists': typeof AuthenticatedListsRoute
   '/portfolio': typeof AuthenticatedPortfolioRoute
+  '/progress': typeof AuthenticatedProgressRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/_authenticated/autopilot': typeof AuthenticatedAutopilotRoute
   '/_authenticated/lists': typeof AuthenticatedListsRoute
   '/_authenticated/portfolio': typeof AuthenticatedPortfolioRoute
+  '/_authenticated/progress': typeof AuthenticatedProgressRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/autopilot'
     | '/lists'
     | '/portfolio'
+    | '/progress'
     | '/security'
     | '/api/analyze'
     | '/stock/$symbol'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/autopilot'
     | '/lists'
     | '/portfolio'
+    | '/progress'
     | '/security'
     | '/api/analyze'
     | '/stock/$symbol'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/_authenticated/autopilot'
     | '/_authenticated/lists'
     | '/_authenticated/portfolio'
+    | '/_authenticated/progress'
     | '/_authenticated/security'
     | '/api/analyze'
     | '/stock/$symbol'
@@ -327,6 +339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortfolioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/progress': {
+      id: '/_authenticated/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof AuthenticatedProgressRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/security': {
       id: '/_authenticated/security'
       path: '/security'
@@ -370,6 +389,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAutopilotRoute: typeof AuthenticatedAutopilotRoute
   AuthenticatedListsRoute: typeof AuthenticatedListsRoute
   AuthenticatedPortfolioRoute: typeof AuthenticatedPortfolioRoute
+  AuthenticatedProgressRoute: typeof AuthenticatedProgressRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
 }
 
@@ -378,6 +398,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAutopilotRoute: AuthenticatedAutopilotRoute,
   AuthenticatedListsRoute: AuthenticatedListsRoute,
   AuthenticatedPortfolioRoute: AuthenticatedPortfolioRoute,
+  AuthenticatedProgressRoute: AuthenticatedProgressRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
 }
 
