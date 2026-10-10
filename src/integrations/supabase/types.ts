@@ -194,6 +194,59 @@ export type Database = {
         }
         Relationships: []
       }
+      league_members: {
+        Row: {
+          display_name: string
+          joined_at: string
+          league_id: string
+          user_id: string
+        }
+        Insert: {
+          display_name: string
+          joined_at?: string
+          league_id: string
+          user_id: string
+        }
+        Update: {
+          display_name?: string
+          joined_at?: string
+          league_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "league_members_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leagues: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+        }
+        Relationships: []
+      }
       opportunities: {
         Row: {
           action: string
