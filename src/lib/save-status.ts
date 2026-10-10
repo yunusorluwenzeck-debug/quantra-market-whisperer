@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
 }
 
 /** Wraps a server save. Only reports "saved" when the server confirms success. */
-export async function trackSave<T extends { ok: boolean }>(fn: () => Promise<T>): Promise<T | { ok: false; error: string }> {
+export async function trackSave<T extends { ok: boolean }>(fn: () => Promise<T>): Promise<T | { ok: false; error: string; network: true }> {
   if (typeof navigator !== "undefined" && !navigator.onLine) { set("offline"); return { ok: false, error: "Du är offline — inget sparades. Försök igen när du är ansluten." }; }
   set("saving");
   try {
@@ -20,7 +20,7 @@ export async function trackSave<T extends { ok: boolean }>(fn: () => Promise<T>)
     return r;
   } catch {
     set(typeof navigator !== "undefined" && !navigator.onLine ? "offline" : "failed");
-    return { ok: false, error: "Anslutningen bröts — affären bekräftades inte. Försök igen." };
+    return { ok: false, error: "Anslutningen bröts — affären bekräftades inte. Försök igen.", network: true as const };
   }
 }
 

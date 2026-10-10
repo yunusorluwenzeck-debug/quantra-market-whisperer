@@ -5,6 +5,7 @@ import { setSekRate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { SaveBadge } from "@/components/SaveBadge";
 
 const NAV = [
   { to: "/", label: "Översikt" },
@@ -14,6 +15,7 @@ const NAV = [
   { to: "/portfolio", label: "Portfölj" },
   { to: "/autopilot", label: "Autopilot" },
   { to: "/lists", label: "Listor" },
+  { to: "/progress", label: "Framsteg" },
   { to: "/alerts", label: "Larm" },
   { to: "/security", label: "Säkerhet" },
 ] as const;
@@ -60,6 +62,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-3">
+            {user && <SaveBadge />}
             <button onClick={toggleTheme} aria-label="Byt ljust/mörkt läge" className="rounded-full border border-border px-2.5 py-1 font-mono text-xs text-muted-foreground hover:text-foreground">{dark ? "Ljust" : "Mörkt"}</button>
             <form onSubmit={(e) => { e.preventDefault(); const s = q.trim().toUpperCase(); if (s) nav({ to: "/stock/$symbol", params: { symbol: s } }); setQ(""); }}>
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Sök ticker… t.ex. VOLV-B.ST"

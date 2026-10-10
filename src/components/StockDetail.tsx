@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { getStock } from "@/lib/market.functions";
 import { placeOrder } from "@/lib/trading.functions";
+import { trackSave } from "@/lib/save-status";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { fmt, signalClass, tone, usd } from "@/lib/format";
@@ -105,13 +106,21 @@ function TradeBox({ symbol, priceUsd, currency }: { symbol: string; priceUsd: nu
     queryKey: ["account", user?.id], enabled: !!user,
     queryFn: async () => (await supabase.from("paper_accounts").select("cash").maybeSingle()).data,
   });
-  async function go(side: "buy" | "sell") {
+  // Same key is reused when a request is lost in transit, so a retry can never double-trade.
+  const pendingKey = useRef<string | null>(null);
+  async function submit(payload: { symbol: string; side: "buy" | "sell"; qty?: number; amountUsd?: number }) {
+    const clientKey = pendingKey.current ?? (pendingKey.current = crypto.randomUUID());
     setBusy(true);
-    const r = await order({ data: { clientKey: crypto.randomUUID(), ...(side === "sell" && pos && Number(amt) <= 0 ? { symbol, side, qty: Number(pos.qty) } : { symbol, side, amountUsd: Number(amt) }) } });
+    const r = await trackSave(() => order({ data: { clientKey, ...payload } }));
     setBusy(false);
-    if (!r.ok) { toast.error(r.error ?? "Ordern misslyckades"); return; }
-    toast.success(`Simulerat ${side === "buy" ? "köp" : "sälj"} av ${fmt(r.qty, 4)} ${symbol} @ ${usd(r.price)}`);
+    if (!("network" in r)) pendingKey.current = null;
     qc.invalidateQueries();
+    return r;
+  }
+  async function go(side: "buy" | "sell") {
+    const r = await submit(side === "sell" && pos && Number(amt) <= 0 ? { symbol, side, qty: Number(pos.qty) } : { symbol, side, amountUsd: Number(amt) });
+    if (!r.ok || !("qty" in r)) { toast.error(r.error ?? "Ordern misslyckades"); return; }
+    toast.success(`Simulerat ${side === "buy" ? "köp" : "sälj"} av ${fmt(r.qty, 4)} ${symbol} @ ${usd(r.price)}`);
   }
   return (
     <section className="rounded-lg border border-border bg-card p-4">
@@ -128,7 +137,7 @@ function TradeBox({ symbol, priceUsd, currency }: { symbol: string; priceUsd: nu
             <button disabled={busy} onClick={() => go("buy")} className="rounded-md bg-bull py-2 font-mono text-sm font-semibold text-background disabled:opacity-50">Köp</button>
             <button disabled={busy || !pos} onClick={() => go("sell")} className="rounded-md bg-bear py-2 font-mono text-sm font-semibold text-background disabled:opacity-50">Sälj</button>
           </div>
-          {pos && <button disabled={busy} onClick={() => { setAmt("0"); void order({ data: { clientKey: crypto.randomUUID(), symbol, side: "sell", qty: Number(pos.qty) } }).then((r) => { r.ok ? toast.success("Innehavet sålt") : toast.error(r.error ?? "Misslyckades"); qc.invalidateQueries(); }); }} className="font-mono text-xs text-muted-foreground hover:text-foreground">Sälj hela innehavet</button>}
+          {pos && <button disabled={busy} onClick={() => { setAmt("0"); void submit({ symbol, side: "sell", qty: Number(pos.qty) }).then((r) => { if (r.ok) toast.success("Innehavet sålt"); else toast.error(r.error ?? "Misslyckades"); }); }} className="font-mono text-xs text-muted-foreground hover:text-foreground">Sälj hela innehavet</button>}
         </div>
       )}
     </section>
