@@ -31,3 +31,27 @@ export function safeError(e: unknown, fallback: string) {
   if (!hit) console.error(fallback, m);
   return hit ?? fallback;
 }
+
+/** Per-user hourly limits for sensitive actions. */
+export const LIMITS = {
+  order: 60,
+  run_bot: 10,
+  reset_account: 5,
+  save_settings: 60,
+  test_email: 5,
+} as const;
+export const RATE_LIMITED = "Too many requests — please wait a while and try again";
+
+/** Returns false (and logs) when the user has hit the hourly limit for this action. */
+export async function takeRateSlot(userId: string, action: keyof typeof LIMITS) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.rpc("take_rate_slot", { _user: userId, _action: action, _max: LIMITS[action], _window_sec: 3600 });
+    if (error) throw error;
+    if (data === false) await logEvent(userId, "rate_limited", { action });
+    return data !== false;
+  } catch (e) {
+    console.error("rate limit check failed", e instanceof Error ? e.message : e);
+    return true; // fail open so a database hiccup doesn't block normal use
+  }
+}

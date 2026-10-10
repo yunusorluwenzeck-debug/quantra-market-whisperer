@@ -359,6 +359,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_hits: {
+        Row: {
+          action: string
+          created_at: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: number
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       security_events: {
         Row: {
           created_at: string
@@ -528,6 +549,15 @@ export type Database = {
           rls_enabled: boolean
           table_name: string
         }[]
+      }
+      take_rate_slot: {
+        Args: {
+          _action: string
+          _max: number
+          _user: string
+          _window_sec: number
+        }
+        Returns: boolean
       }
     }
     Enums: {

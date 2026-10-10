@@ -64,6 +64,13 @@
       "when": 1791632589944,
       "tag": "0008_security_hardening",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791633167283,
+      "tag": "0009_rate_limits",
+      "breakpoints": true
     }
   ]
 }

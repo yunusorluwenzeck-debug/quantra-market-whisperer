@@ -5,13 +5,14 @@ import { fetchStock } from "./market.server";
 import { currencyOf, fxRates } from "./scanner.server";
 import { runBotForUser } from "./bot.server";
 import { runBacktest } from "./backtest.server";
-import { claimOrderKey, logEvent, safeError } from "./security.server";
+import { claimOrderKey, logEvent, safeError, takeRateSlot, RATE_LIMITED } from "./security.server";
 
 export const placeOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ symbol: z.string().min(1).max(15), side: z.enum(["buy", "sell"]), amountUsd: z.number().positive().max(10_000_000).optional(), qty: z.number().positive().optional(), clientKey: z.string().uuid().optional() }).parse(d))
   .handler(async ({ data, context }) => {
     try {
+      if (!(await takeRateSlot(context.userId, "order"))) return { ok: false, error: RATE_LIMITED };
       if (data.clientKey && !(await claimOrderKey(context.userId, data.clientKey))) {
         await logEvent(context.userId, "duplicate_order_blocked", { symbol: data.symbol, side: data.side });
         return { ok: false, error: "This order was already submitted" };
@@ -51,6 +52,7 @@ export const saveBotSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => settingsSchema.parse(d))
   .handler(async ({ data, context }) => {
+    if (!(await takeRateSlot(context.userId, "save_settings"))) return { ok: false, error: RATE_LIMITED };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("bot_settings").upsert({ user_id: context.userId, ...data, updated_at: new Date().toISOString() });
     if (error) return { ok: false, error: safeError(error, "Could not save settings") };
@@ -73,6 +75,7 @@ export const setEmergencyStop = createServerFn({ method: "POST" })
 export const runBotNow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    if (!(await takeRateSlot(context.userId, "run_bot"))) return { ok: false, error: RATE_LIMITED };
     try {
       const r = await runBotForUser(context.userId);
       return { ok: true, error: null, ...r };
@@ -86,6 +89,7 @@ export const resetPaperAccount = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const u = context.userId;
+    if (!(await takeRateSlot(u, "reset_account"))) return { ok: false, error: RATE_LIMITED };
     await logEvent(u, "paper_account_reset");
     await supabaseAdmin.from("paper_positions").delete().eq("user_id", u);
     await supabaseAdmin.from("paper_trades").delete().eq("user_id", u);
@@ -111,7 +115,10 @@ export const getEmailStatus = createServerFn({ method: "POST" })
 
 export const sendTestEmail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => denyLog(await (await import("./email-panel.server")).testEmail(context.supabase as never, context.userId), context.userId, "send_test_email"));
+  .handler(async ({ context }) => {
+    if (!(await takeRateSlot(context.userId, "test_email"))) return { ok: false, error: RATE_LIMITED };
+    return denyLog(await (await import("./email-panel.server")).testEmail(context.supabase as never, context.userId), context.userId, "send_test_email");
+  });
 
 export const getEmailPanel = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
