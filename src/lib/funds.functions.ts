@@ -28,9 +28,9 @@ export const getFunds = createServerFn({ method: "GET" }).handler(async () => {
         const vol = s.indicators.volatility;
         const risk = vol == null ? null : vol < 2 ? 1 : vol < 5 ? 2 : vol < 10 ? 3 : vol < 15 ? 4 : vol < 25 ? 5 : vol < 35 ? 6 : 7;
         return { ...f, price: s.price, currency: s.currency, changePct: s.changePct, r1m: back(21), r6m: back(126), r1y: back(c.length - 1),
-          vol, risk, history: s.candles.map((x) => ({ t: x.t, c: x.c })), asOf: s.candles.at(-1)?.t ?? null, error: null as string | null };
+          vol, risk, history: s.candles.map((x) => ({ t: x.t, c: x.c })), asOf: s.candles.at(-1)?.t ?? null, marketTime: s.marketTime, fetchedAt: Date.now(), error: null as string | null };
       } catch {
-        return { ...f, price: null, currency: "USD", changePct: null, r1m: null, r6m: null, r1y: null, vol: null, risk: null, history: [], asOf: null, error: "Data saknas just nu" };
+        return { ...f, price: null, currency: "USD", changePct: null, r1m: null, r6m: null, r1y: null, vol: null, risk: null, history: [], asOf: null, marketTime: null, fetchedAt: Date.now(), error: "Data saknas just nu" };
       }
     }),
   );
