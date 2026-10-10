@@ -8,6 +8,10 @@ export async function claimJob(job: string, minMs: number) {
   return true;
 }
 
-export function hasBearer(request: Request) {
-  return /^Bearer \S+$/.test(request.headers.get("authorization") ?? "");
+/** Verifies the bearer token against the server-only cron token stored in the database (never exposed to browsers). */
+export async function isCronCaller(request: Request) {
+  const m = /^Bearer ([A-Za-z0-9]{32,128})$/.exec(request.headers.get("authorization") ?? "");
+  if (!m) return false;
+  const { data, error } = await supabaseAdmin.rpc("verify_cron_token", { _token: m[1]! });
+  return !error && data === true;
 }

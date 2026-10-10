@@ -2,14 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { runAllBots } from "@/lib/bot.server";
 import { generateTopPickReports } from "@/lib/ai.server";
 import { runOpportunityEmails } from "@/lib/notify.server";
-import { claimJob, hasBearer } from "@/lib/jobs.server";
+import { claimJob, isCronCaller } from "@/lib/jobs.server";
 
 export const Route = createFileRoute("/api/public/hooks/autotrade")({
   staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {
-        if (!hasBearer(request)) return new Response("Unauthorized", { status: 401 });
+        if (!(await isCronCaller(request))) return new Response("Unauthorized", { status: 401 });
         if (!(await claimJob("autotrade", 25 * 60_000))) return Response.json({ skipped: true });
         const bots = await runAllBots().catch((e) => { console.error(e); return null; });
         let reports = 0;
