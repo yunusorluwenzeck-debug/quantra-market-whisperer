@@ -4,7 +4,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { checkSignInLock, reportFailedSignIn, reportOauthFailure } from "@/lib/security.functions";
+import { passwordSignIn, reportOauthFailure } from "@/lib/security.functions";
 
 const safePath = (p?: string) => (p && p.startsWith("/") && !p.startsWith("//") ? p : "/portfolio");
 
