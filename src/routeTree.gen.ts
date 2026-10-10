@@ -19,6 +19,7 @@ import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAutopilotRouteImport } from './routes/_authenticated/autopilot'
 import { Route as AuthenticatedListsRouteImport } from './routes/_authenticated/lists'
 import { Route as AuthenticatedPortfolioRouteImport } from './routes/_authenticated/portfolio'
+import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated/security'
 import { Route as ApiAnalyzeRouteImport } from './routes/api/analyze'
 import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
 import { Route as ApiPublicHooksAutotradeRouteImport } from './routes/api/public/hooks/autotrade'
@@ -73,6 +74,11 @@ const AuthenticatedPortfolioRoute = AuthenticatedPortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiAnalyzeRoute = ApiAnalyzeRouteImport.update({
   id: '/api/analyze',
   path: '/api/analyze',
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/autopilot': typeof AuthenticatedAutopilotRoute
   '/lists': typeof AuthenticatedListsRoute
   '/portfolio': typeof AuthenticatedPortfolioRoute
+  '/security': typeof AuthenticatedSecurityRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/autopilot': typeof AuthenticatedAutopilotRoute
   '/lists': typeof AuthenticatedListsRoute
   '/portfolio': typeof AuthenticatedPortfolioRoute
+  '/security': typeof AuthenticatedSecurityRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
@@ -136,6 +144,7 @@ export interface FileRoutesById {
   '/_authenticated/autopilot': typeof AuthenticatedAutopilotRoute
   '/_authenticated/lists': typeof AuthenticatedListsRoute
   '/_authenticated/portfolio': typeof AuthenticatedPortfolioRoute
+  '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/autopilot'
     | '/lists'
     | '/portfolio'
+    | '/security'
     | '/api/analyze'
     | '/stock/$symbol'
     | '/api/public/hooks/autotrade'
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/autopilot'
     | '/lists'
     | '/portfolio'
+    | '/security'
     | '/api/analyze'
     | '/stock/$symbol'
     | '/api/public/hooks/autotrade'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/_authenticated/autopilot'
     | '/_authenticated/lists'
     | '/_authenticated/portfolio'
+    | '/_authenticated/security'
     | '/api/analyze'
     | '/stock/$symbol'
     | '/api/public/hooks/autotrade'
@@ -275,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortfolioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/security': {
+      id: '/_authenticated/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof AuthenticatedSecurityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/analyze': {
       id: '/api/analyze'
       path: '/api/analyze'
@@ -311,6 +330,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAutopilotRoute: typeof AuthenticatedAutopilotRoute
   AuthenticatedListsRoute: typeof AuthenticatedListsRoute
   AuthenticatedPortfolioRoute: typeof AuthenticatedPortfolioRoute
+  AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -318,6 +338,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAutopilotRoute: AuthenticatedAutopilotRoute,
   AuthenticatedListsRoute: AuthenticatedListsRoute,
   AuthenticatedPortfolioRoute: AuthenticatedPortfolioRoute,
+  AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
