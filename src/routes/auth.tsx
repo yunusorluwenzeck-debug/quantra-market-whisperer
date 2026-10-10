@@ -40,8 +40,16 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "in") {
+        const lock = await checkSignInLock({ data: { email } }).catch(() => ({ lockedUntil: null }));
+        if (lock.lockedUntil) throw new Error(`Too many failed attempts. This account is temporarily locked until ${new Date(lock.lockedUntil).toLocaleTimeString()}.`);
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (/invalid login/i.test(error.message)) {
+            const r = await reportFailedSignIn({ data: { email } }).catch(() => ({ locked: false }));
+            if (r.locked) throw new Error("Too many failed attempts. This account is temporarily locked for 30 minutes.");
+          }
+          throw error;
+        }
         nav({ to: safePath(redirect) });
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}${safePath(redirect)}` } });
