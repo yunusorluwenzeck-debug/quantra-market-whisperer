@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getProgress } from "@/lib/progress.functions";
-import { CAREER, careerLevel } from "@/lib/progress";
+import { CAREER, careerLevel, isPeriodicCode } from "@/lib/progress";
 
 export const Route = createFileRoute("/_authenticated/career")({
   staticData: { sitemap: false },
@@ -23,7 +23,7 @@ function Career() {
   const load = useServerFn(getProgress);
   const { data, isLoading } = useQuery({ queryKey: ["progress"], queryFn: () => load() });
   if (isLoading || !data) return <div className="h-40 animate-pulse rounded-2xl bg-muted" />;
-  const input = { xp: data.xp, achievements: new Set(data.achievements.map((a) => a.code)), missions: data.missions.length };
+  const input = { xp: data.xp, achievements: new Set(data.achievements.map((a) => a.code)), missions: data.missions.filter((m) => !isPeriodicCode(m.code)).length };
   const lvl = careerLevel(input);
   const cur = CAREER[lvl]!;
   return (

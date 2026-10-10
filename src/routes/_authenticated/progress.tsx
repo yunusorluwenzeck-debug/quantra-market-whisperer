@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { getProgress, completeMission } from "@/lib/progress.functions";
 import { ACHIEVEMENTS, MISSIONS, levelOf } from "@/lib/progress";
 import { trackSave } from "@/lib/save-status";
+import { PeriodicMissions } from "@/components/PeriodicMissions";
+import { isPeriodicCode } from "@/lib/progress";
 
 export const Route = createFileRoute("/_authenticated/progress")({
   staticData: { sitemap: false },
@@ -28,7 +30,7 @@ function Progress() {
   if (isLoading || !data) return <div className="text-sm text-muted-foreground">Laddar framsteg…</div>;
   const lv = levelOf(data.xp);
   const got = new Set(data.achievements.map((a) => a.code));
-  const done = new Set(data.missions.map((m) => m.code));
+  const done = new Set(data.missions.filter((m) => !isPeriodicCode(m.code)).map((m) => m.code));
   return (
     <div className="grid gap-6">
       <div>
@@ -40,6 +42,7 @@ function Progress() {
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full bg-primary transition-all" style={{ width: `${(lv.current / lv.needed) * 100}%` }} /></div>
         <div className="mt-1 font-mono text-xs text-muted-foreground">{lv.needed - lv.current} XP kvar till nivå {lv.level + 1}</div>
       </section>
+      <PeriodicMissions />
       <section>
         <h2 className="mb-3 font-semibold">Prestationer ({got.size}/{ACHIEVEMENTS.length})</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
