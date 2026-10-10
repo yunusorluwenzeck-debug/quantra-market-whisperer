@@ -2,7 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isOwner, NOT_OWNER } from "./owner";
-import { logEvent } from "./security.server";
+import { logEvent, takePublicSlot } from "./security.server";
+
+async function clientIp() {
+  const { getRequestHeader } = await import("@tanstack/react-start/server");
+  return getRequestHeader("cf-connecting-ip") ?? getRequestHeader("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+}
 
 const USER_TABLES = ["paper_accounts", "paper_positions", "paper_trades", "bot_settings", "bot_events", "stock_lists", "price_alerts", "security_events"] as const;
 const PRIVATE_TABLES = [...USER_TABLES, "email_settings", "opportunities", "user_roles", "job_runs", "order_keys", "stocks", "ai_reports"];
@@ -31,6 +36,7 @@ const signInInput = (d: unknown) => z.object({ email: z.string().trim().email().
 export const passwordSignIn = createServerFn({ method: "POST" })
   .inputValidator(signInInput)
   .handler(async ({ data }) => {
+    if (!(await takePublicSlot(await clientIp(), "public_sign_in", 30, 1000))) return { session: null, error: "Too many sign-in attempts — please wait a while and try again" };
     const g = await import("./signin-guard.server");
     const hash = await g.hashEmail(data.email);
     const LOCKED = "Too many failed attempts. Password sign-in for this account is paused for a while — try again later.";
@@ -57,6 +63,8 @@ export const passwordSignIn = createServerFn({ method: "POST" })
 export const reportOauthFailure = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ provider: z.enum(["google", "apple", "microsoft"]) }).parse(d))
   .handler(async ({ data }) => {
+    // Unverified client report: capped per visitor and globally; never emails anyone.
+    if (!(await takePublicSlot(await clientIp(), "oauth_report", 10, 100))) return { suspicious: false, count: 0 };
     const g = await import("./oauth-guard.server");
     return g.recordOauthFailure(data.provider, await country());
   });

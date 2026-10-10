@@ -55,3 +55,24 @@ export async function takeRateSlot(userId: string, action: keyof typeof LIMITS) 
     return true; // fail open so a database hiccup doesn't block normal use
   }
 }
+
+/**
+ * Rate limit for public (signed-out) endpoints, keyed by a hash of the caller's IP plus a global cap,
+ * so anonymous callers cannot create unlimited records or alerts.
+ */
+export async function takePublicSlot(ip: string | null, action: string, perIp: number, global: number) {
+  const toUuid = async (v: string) => {
+    const h = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v))), (b) => b.toString(16).padStart(2, "0")).join("");
+    return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
+  };
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const g = await supabaseAdmin.rpc("take_rate_slot", { _user: await toUuid("global"), _action: action, _max: global, _window_sec: 3600 });
+    if (g.data === false) return false;
+    const r = await supabaseAdmin.rpc("take_rate_slot", { _user: await toUuid(`ip:${ip ?? "unknown"}`), _action: action, _max: perIp, _window_sec: 3600 });
+    return r.data !== false;
+  } catch (e) {
+    console.error("public rate limit failed", e instanceof Error ? e.message : e);
+    return true;
+  }
+}

@@ -20,3 +20,5 @@
 - [x] Suspicious sign-in protection: temporary lock + owner email notification
 - [x] Per-user request limits (hourly, on trades, autopilot runs, settings, resets, test emails)
 - [x] Suspicious-activity monitoring for failed Google sign-ins (log + owner email + security page)
+
+- [x] Security spec pass: rate-limit public sign-in/alert endpoints, verify all endpoints reject unauthenticated calls
