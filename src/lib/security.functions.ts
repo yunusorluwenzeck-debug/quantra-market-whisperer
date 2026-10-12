@@ -40,7 +40,7 @@ export const passwordSignIn = createServerFn({ method: "POST" })
     const g = await import("./signin-guard.server");
     const hash = await g.hashEmail(data.email);
     const LOCKED = "Too many failed attempts. Password sign-in for this account is paused for a while — try again later.";
-    if (await g.lockedUntil(hash)) return { session: null, error: LOCKED };
+    // Lock status is only revealed after the password has been verified, so nobody can probe it.
     const { createClient } = await import("@supabase/supabase-js");
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
     const sb = createClient(process.env["SUPABASE_URL"]!, key, {
@@ -56,6 +56,8 @@ export const passwordSignIn = createServerFn({ method: "POST" })
       }
       return { session: null, error: error?.message ?? "Inloggningen misslyckades" };
     }
+    // Correct password, but the account is locked: refuse the session without revealing why it was checked.
+    if (await g.lockedUntil(hash)) return { session: null, error: LOCKED };
     return { session: { access_token: res.session.access_token, refresh_token: res.session.refresh_token }, error: null };
   });
 
