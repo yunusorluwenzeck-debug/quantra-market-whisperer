@@ -92,6 +92,13 @@
       "when": 1791651291187,
       "tag": "0012_leagues",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791795626830,
+      "tag": "0013_push_notifications",
+      "breakpoints": true
     }
   ]
 }
