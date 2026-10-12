@@ -61,12 +61,11 @@ export const passwordSignIn = createServerFn({ method: "POST" })
     return { session: { access_token: res.session.access_token, refresh_token: res.session.refresh_token }, error: null };
   });
 
-/** Public: records a failed OAuth (e.g. Google) sign-in attempt; alerts the owner on repeats. */
+/** Signed-in only: records a failed OAuth (e.g. Google) sign-in attempt; alerts the owner on repeats. */
 export const reportOauthFailure = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ provider: z.enum(["google", "apple", "microsoft"]) }).parse(d))
   .handler(async ({ data }) => {
-    // Unverified client report: capped per visitor and globally; never emails anyone.
-    if (!(await takePublicSlot(await clientIp(), "oauth_report", PUBLIC_LIMITS.oauth_report.perIp, PUBLIC_LIMITS.oauth_report.global))) return { suspicious: false, count: 0 };
     const g = await import("./oauth-guard.server");
     return g.recordOauthFailure(data.provider, await country());
   });
