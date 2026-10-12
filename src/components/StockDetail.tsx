@@ -163,7 +163,7 @@ function ListAndAlert({ symbol, price, currency }: { symbol: string; price: numb
     const t = Number(target);
     if (!(t > 0)) { toast.error("Ange ett målpris"); return; }
     const { error } = await supabase.from("price_alerts").insert({ symbol, direction: dir, target: t });
-    if (error) toast.error(error.message); else { toast.success(`Larm satt: ${symbol} ${dir} ${fmt(t)} ${currency}`); qc.invalidateQueries({ queryKey: ["alerts"] }); }
+    if (error) toast.error(error.message); else { toast.success(`Larm satt: ${symbol} ${dir} ${fmt(t)} ${currency}`); qc.invalidateQueries({ queryKey: ["alerts"] }); void notifyMissionActivity(); }
   }
   return (
     <section className="grid gap-4 rounded-lg border border-border bg-card p-4">
