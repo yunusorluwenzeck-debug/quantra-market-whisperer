@@ -20,3 +20,4 @@
 - Manual orders carry a one-time `clientKey` claimed in `order_keys` before trading — blocks double-submits and replays.
 - XP comes only from server-written `player_achievements` (derived from real trade data) and `player_missions` (quiz answers checked server-side); clients have read-only access — players can't fake progress.
 - The MCP server lives in src/lib/mcp (one tool per file, OAuth-protected, RLS via caller token) — exposes read-only app data to external assistants without privileged keys.
+- Tutorial chapters and market challenges award XP as `player_missions` codes `t:<n>` / `c:<id>`; challenge outcomes are computed server-side from fixed scenario data in game.server.ts and stored in `challenge_runs` — deterministic, cheat-proof, replay never re-awards XP.

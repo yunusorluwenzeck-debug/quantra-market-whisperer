@@ -33,6 +33,7 @@
 - [x] XP, levels, achievements, learning missions (Framsteg page)
 - [x] Password reset page + automated end-to-end test
 - [x] Optional MFA (authenticator app, on Säkerhet page)
-- [ ] StockLab 2.0 fas 1–3: granskning, ny hemskärm + nav, handledning (7 kapitel), Börsutmaningen
-- [ ] MCP: verktyg för aktieanalys/nyckeltal för vald aktie
-- [ ] MCP: skrivskyddat verktyg för bevakningslistor och kurslarm
+- [x] StockLab 2.0 fas 1–3: ny hemskärm + nav, handledning (7 kapitel), Börsutmaningen (3 scenarier)
+- [ ] StockLab 2.0 fas 4–8: karriär/uppdrag/prestationssamling, Akademi + AI-coach, tidsmaskin, ligor, slutlig test
+- [x] MCP: verktyg för aktieanalys/nyckeltal för vald aktie
+- [x] MCP: skrivskyddat verktyg för bevakningslistor och kurslarm
