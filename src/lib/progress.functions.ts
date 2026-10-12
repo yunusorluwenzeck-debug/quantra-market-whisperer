@@ -30,6 +30,8 @@ export const completeMission = createServerFn({ method: "POST" })
       .upsert({ user_id: context.userId, code: data.code, xp: r.xp }, { onConflict: "user_id,code", ignoreDuplicates: true });
     if (error) return { ok: false, error: "Kunde inte spara uppdraget" };
     await logEvent(context.userId, "mission_completed", { code: data.code });
+    const { pushToUser } = await import("./push.server");
+    await pushToUser(context.userId, "Uppdrag klart! 🎯", `Du har slutfört ett läromuppdrag och fått +${r.xp} XP.`).catch(() => 0);
     return { ok: true, error: null };
   });
 
@@ -62,5 +64,7 @@ export const claimPeriodicMission = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("player_missions")
       .upsert({ user_id: context.userId, code: periodicCode(m.id, st.keys), xp: m.xp }, { onConflict: "user_id,code", ignoreDuplicates: true });
     if (error) return { ok: false, error: "Kunde inte spara" };
+    const { pushToUser } = await import("./push.server");
+    await pushToUser(context.userId, "Uppdrag klart! 🎯", `"${m.title}" är klart — du fick +${m.xp} XP.`).catch(() => 0);
     return { ok: true, error: null, xp: m.xp };
   });
