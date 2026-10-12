@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { getStock } from "@/lib/market.functions";
 import { placeOrder } from "@/lib/trading.functions";
+import { notifyMissionActivity } from "@/lib/progress.functions";
 import { trackSave } from "@/lib/save-status";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
