@@ -5,8 +5,12 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { passwordSignIn, reportOauthFailure } from "@/lib/security.functions";
+import { oauthReturnPath } from "@/lib/oauth-return-path";
 
-const safePath = (p?: string) => (p && p.startsWith("/") && !p.startsWith("//") ? p : "/portfolio");
+const safePath = (p?: string) => {
+  const r = oauthReturnPath(p);
+  return r === "/" ? "/portfolio" : r;
+};
 
 export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
@@ -33,7 +37,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => { if (data.session) nav({ to: safePath(redirect) }); });
+    supabase.auth.getSession().then(({ data }) => { if (data.session) nav({ href: safePath(redirect) }); });
     // Full-page OAuth redirects come back with ?error=… when the provider sign-in failed.
     const q = new URLSearchParams(window.location.search);
     if (q.get("error")) {
@@ -52,11 +56,11 @@ function AuthPage() {
         if (r.error || !r.session) throw new Error(r.error ?? "Inloggningen misslyckades");
         const { error } = await supabase.auth.setSession(r.session);
         if (error) throw error;
-        nav({ to: safePath(redirect) });
+        nav({ href: safePath(redirect) });
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}${safePath(redirect)}` } });
         if (error) throw error;
-        if (data.session) nav({ to: safePath(redirect) });
+        if (data.session) nav({ href: safePath(redirect) });
         else toast.success("Kolla din e-post för att bekräfta kontot.");
       }
     } catch (err) {
@@ -75,7 +79,7 @@ function AuthPage() {
       return;
     }
     if (r.redirected) return;
-    nav({ to: safePath(redirect) });
+    nav({ href: safePath(redirect) });
   }
 
   return (

@@ -14,9 +14,11 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BacktestRouteImport } from './routes/backtest'
 import { Route as FonderRouteImport } from './routes/fonder'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ScreenerRouteImport } from './routes/screener'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
 import { Route as AuthenticatedAutopilotRouteImport } from './routes/_authenticated/autopilot'
 import { Route as AuthenticatedCareerRouteImport } from './routes/_authenticated/career'
@@ -27,6 +29,7 @@ import { Route as AuthenticatedProgressRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated/security'
 import { Route as ApiAnalyzeRouteImport } from './routes/api/analyze'
 import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicHooksAutotradeRouteImport } from './routes/api/public/hooks/autotrade'
 import { Route as ApiPublicHooksMissionPushRouteImport } from './routes/api/public/hooks/mission-push'
 import { Route as ApiPublicHooksScanRouteImport } from './routes/api/public/hooks/scan'
@@ -55,6 +58,11 @@ const FonderRoute = FonderRouteImport.update({
   path: '/fonder',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -70,6 +78,12 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAlertsRoute = AuthenticatedAlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
@@ -120,6 +134,11 @@ const StockSymbolRoute = StockSymbolRouteImport.update({
   path: '/stock/$symbol',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksAutotradeRoute = ApiPublicHooksAutotradeRouteImport.update({
   id: '/api/public/hooks/autotrade',
   path: '/api/public/hooks/autotrade',
@@ -142,9 +161,11 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
   '/fonder': typeof FonderRoute
+  '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
   '/screener': typeof ScreenerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/alerts': typeof AuthenticatedAlertsRoute
   '/autopilot': typeof AuthenticatedAutopilotRoute
   '/career': typeof AuthenticatedCareerRoute
@@ -155,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/security': typeof AuthenticatedSecurityRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
   '/api/public/hooks/mission-push': typeof ApiPublicHooksMissionPushRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
@@ -164,9 +186,11 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
   '/fonder': typeof FonderRoute
+  '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
   '/screener': typeof ScreenerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/alerts': typeof AuthenticatedAlertsRoute
   '/autopilot': typeof AuthenticatedAutopilotRoute
   '/career': typeof AuthenticatedCareerRoute
@@ -177,6 +201,7 @@ export interface FileRoutesByTo {
   '/security': typeof AuthenticatedSecurityRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
   '/api/public/hooks/mission-push': typeof ApiPublicHooksMissionPushRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
@@ -188,9 +213,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/backtest': typeof BacktestRoute
   '/fonder': typeof FonderRoute
+  '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
   '/screener': typeof ScreenerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/autopilot': typeof AuthenticatedAutopilotRoute
   '/_authenticated/career': typeof AuthenticatedCareerRoute
@@ -201,6 +228,7 @@ export interface FileRoutesById {
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
   '/api/public/hooks/mission-push': typeof ApiPublicHooksMissionPushRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
@@ -212,9 +240,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/backtest'
     | '/fonder'
+    | '/mcp'
     | '/reset-password'
     | '/screener'
     | '/sitemap.xml'
+    | '/.well-known/oauth-protected-resource'
     | '/alerts'
     | '/autopilot'
     | '/career'
@@ -225,6 +255,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/api/analyze'
     | '/stock/$symbol'
+    | '/.lovable/oauth/consent'
     | '/api/public/hooks/autotrade'
     | '/api/public/hooks/mission-push'
     | '/api/public/hooks/scan'
@@ -234,9 +265,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/backtest'
     | '/fonder'
+    | '/mcp'
     | '/reset-password'
     | '/screener'
     | '/sitemap.xml'
+    | '/.well-known/oauth-protected-resource'
     | '/alerts'
     | '/autopilot'
     | '/career'
@@ -247,6 +280,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/api/analyze'
     | '/stock/$symbol'
+    | '/.lovable/oauth/consent'
     | '/api/public/hooks/autotrade'
     | '/api/public/hooks/mission-push'
     | '/api/public/hooks/scan'
@@ -257,9 +291,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/backtest'
     | '/fonder'
+    | '/mcp'
     | '/reset-password'
     | '/screener'
     | '/sitemap.xml'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/alerts'
     | '/_authenticated/autopilot'
     | '/_authenticated/career'
@@ -270,6 +306,7 @@ export interface FileRouteTypes {
     | '/_authenticated/security'
     | '/api/analyze'
     | '/stock/$symbol'
+    | '/.lovable/oauth/consent'
     | '/api/public/hooks/autotrade'
     | '/api/public/hooks/mission-push'
     | '/api/public/hooks/scan'
@@ -281,11 +318,14 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BacktestRoute: typeof BacktestRoute
   FonderRoute: typeof FonderRoute
+  McpRoute: typeof McpRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ScreenerRoute: typeof ScreenerRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiAnalyzeRoute: typeof ApiAnalyzeRoute
   StockSymbolRoute: typeof StockSymbolRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicHooksAutotradeRoute: typeof ApiPublicHooksAutotradeRoute
   ApiPublicHooksMissionPushRoute: typeof ApiPublicHooksMissionPushRoute
   ApiPublicHooksScanRoute: typeof ApiPublicHooksScanRoute
@@ -328,6 +368,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FonderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -347,6 +394,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/alerts': {
@@ -419,6 +473,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StockSymbolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/autotrade': {
       id: '/api/public/hooks/autotrade'
       path: '/api/public/hooks/autotrade'
@@ -474,11 +535,15 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BacktestRoute: BacktestRoute,
   FonderRoute: FonderRoute,
+  McpRoute: McpRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ScreenerRoute: ScreenerRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiAnalyzeRoute: ApiAnalyzeRoute,
   StockSymbolRoute: StockSymbolRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicHooksAutotradeRoute: ApiPublicHooksAutotradeRoute,
   ApiPublicHooksMissionPushRoute: ApiPublicHooksMissionPushRoute,
   ApiPublicHooksScanRoute: ApiPublicHooksScanRoute,

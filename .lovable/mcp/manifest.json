@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "sdk_version": "3.0.5",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://lvmkmmeaiilhsmoeesqe.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "market-whisperer-ai",
+      "version": "0.1.0",
+      "title": "Market Whisperer AI"
+    },
+    "tools": [
+      {
+        "name": "get_portfolio",
+        "title": "Get paper portfolio",
+        "description": "Return the signed-in user's simulated (paper) account cash and open positions in USD.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_trades",
+        "title": "List paper trades",
+        "description": "List the signed-in user's most recent simulated (paper) trades, newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 20,
+              "description": "How many trades to return (1-100).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "top_stocks",
+        "title": "Top scored stocks",
+        "description": "Return the highest quant-scored stocks from the scanner, optionally filtered by region (e.g. US, Europe).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "region": {
+              "description": "Optional region filter, e.g. 'US' or 'Europe'.",
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "How many stocks to return (1-50).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
