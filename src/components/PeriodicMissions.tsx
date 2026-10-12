@@ -62,6 +62,7 @@ export function PeriodicMissions() {
   };
   return (
     <>
+      <PushToggle />
       {group("daily", "Dagens uppdrag", "Nollställs vid midnatt")}
       {group("weekly", "Veckans uppdrag", "Nollställs måndag")}
     </>
