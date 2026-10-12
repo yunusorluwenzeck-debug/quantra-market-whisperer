@@ -134,6 +134,36 @@ export type Database = {
         }
         Relationships: []
       }
+      challenge_runs: {
+        Row: {
+          choices: Json
+          completed_at: string
+          id: string
+          result: Json
+          scenario_id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          choices: Json
+          completed_at?: string
+          id?: string
+          result: Json
+          scenario_id: string
+          score: number
+          user_id: string
+        }
+        Update: {
+          choices?: Json
+          completed_at?: string
+          id?: string
+          result?: Json
+          scenario_id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       cron_tokens: {
         Row: {
           name: string
