@@ -29,6 +29,8 @@ export const placeOrder = createServerFn({ method: "POST" })
       });
       if (error) return { ok: false, error: safeError(error, "Order failed") };
       await syncAchievements(context.userId).catch(() => {});
+      const { pushCompletedMissions } = await import("./push.server");
+      await pushCompletedMissions(context.userId).catch(() => {});
       return { ok: true, error: null, qty, price: px };
     } catch (e) {
       return { ok: false, error: safeError(e, "Order failed") };

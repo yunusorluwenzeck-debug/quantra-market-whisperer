@@ -469,6 +469,42 @@ export type Database = {
         }
         Relationships: []
       }
+      push_sent: {
+        Row: {
+          key: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          key: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          key?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      push_tokens: {
+        Row: {
+          created_at: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       rate_hits: {
         Row: {
           action: string

@@ -28,6 +28,7 @@ import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticat
 import { Route as ApiAnalyzeRouteImport } from './routes/api/analyze'
 import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
 import { Route as ApiPublicHooksAutotradeRouteImport } from './routes/api/public/hooks/autotrade'
+import { Route as ApiPublicHooksMissionPushRouteImport } from './routes/api/public/hooks/mission-push'
 import { Route as ApiPublicHooksScanRouteImport } from './routes/api/public/hooks/scan'
 
 const IndexRoute = IndexRouteImport.update({
@@ -124,6 +125,12 @@ const ApiPublicHooksAutotradeRoute = ApiPublicHooksAutotradeRouteImport.update({
   path: '/api/public/hooks/autotrade',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksMissionPushRoute =
+  ApiPublicHooksMissionPushRouteImport.update({
+    id: '/api/public/hooks/mission-push',
+    path: '/api/public/hooks/mission-push',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksScanRoute = ApiPublicHooksScanRouteImport.update({
   id: '/api/public/hooks/scan',
   path: '/api/public/hooks/scan',
@@ -149,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
+  '/api/public/hooks/mission-push': typeof ApiPublicHooksMissionPushRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
 }
 export interface FileRoutesByTo {
@@ -170,6 +178,7 @@ export interface FileRoutesByTo {
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
+  '/api/public/hooks/mission-push': typeof ApiPublicHooksMissionPushRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
 }
 export interface FileRoutesById {
@@ -193,6 +202,7 @@ export interface FileRoutesById {
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
+  '/api/public/hooks/mission-push': typeof ApiPublicHooksMissionPushRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
 }
 export interface FileRouteTypes {
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/api/analyze'
     | '/stock/$symbol'
     | '/api/public/hooks/autotrade'
+    | '/api/public/hooks/mission-push'
     | '/api/public/hooks/scan'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/api/analyze'
     | '/stock/$symbol'
     | '/api/public/hooks/autotrade'
+    | '/api/public/hooks/mission-push'
     | '/api/public/hooks/scan'
   id:
     | '__root__'
@@ -259,6 +271,7 @@ export interface FileRouteTypes {
     | '/api/analyze'
     | '/stock/$symbol'
     | '/api/public/hooks/autotrade'
+    | '/api/public/hooks/mission-push'
     | '/api/public/hooks/scan'
   fileRoutesById: FileRoutesById
 }
@@ -274,6 +287,7 @@ export interface RootRouteChildren {
   ApiAnalyzeRoute: typeof ApiAnalyzeRoute
   StockSymbolRoute: typeof StockSymbolRoute
   ApiPublicHooksAutotradeRoute: typeof ApiPublicHooksAutotradeRoute
+  ApiPublicHooksMissionPushRoute: typeof ApiPublicHooksMissionPushRoute
   ApiPublicHooksScanRoute: typeof ApiPublicHooksScanRoute
 }
 
@@ -412,6 +426,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksAutotradeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/mission-push': {
+      id: '/api/public/hooks/mission-push'
+      path: '/api/public/hooks/mission-push'
+      fullPath: '/api/public/hooks/mission-push'
+      preLoaderRoute: typeof ApiPublicHooksMissionPushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/scan': {
       id: '/api/public/hooks/scan'
       path: '/api/public/hooks/scan'
@@ -459,6 +480,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAnalyzeRoute: ApiAnalyzeRoute,
   StockSymbolRoute: StockSymbolRoute,
   ApiPublicHooksAutotradeRoute: ApiPublicHooksAutotradeRoute,
+  ApiPublicHooksMissionPushRoute: ApiPublicHooksMissionPushRoute,
   ApiPublicHooksScanRoute: ApiPublicHooksScanRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { PushToggle } from "./PushToggle";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -61,6 +62,7 @@ export function PeriodicMissions() {
   };
   return (
     <>
+      <PushToggle />
       {group("daily", "Dagens uppdrag", "Nollställs vid midnatt")}
       {group("weekly", "Veckans uppdrag", "Nollställs måndag")}
     </>
