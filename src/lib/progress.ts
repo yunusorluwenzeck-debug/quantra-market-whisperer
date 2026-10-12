@@ -79,4 +79,5 @@ export const PERIODIC: PeriodicMission[] = [
   { id: "calm", period: "weekly", title: "Lugn och fin", desc: "Gör 1–10 affärer denna vecka — inte fler. Kvalitet före kvantitet.", xp: 40 },
   { id: "quiz5", period: "weekly", title: "Plugghäst", desc: "Svara rätt på dagens fråga 3 dagar denna vecka.", xp: 60 },
 ];
-export const isPeriodicCode = (code: string) => code.startsWith("d:") || code.startsWith("w:");
+/** Codes that are not classic learning missions: daily/weekly ("d:"/"w:"), tutorial chapters ("t:") and market challenges ("c:"). */
+export const isPeriodicCode = (code: string) => /^[dwtc]:/.test(code);

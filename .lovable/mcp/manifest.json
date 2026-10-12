@@ -86,6 +86,50 @@
           "additionalProperties": false
         },
         "outputSchema": null
+      },
+      {
+        "name": "get_stock_analysis",
+        "title": "Get stock analysis",
+        "description": "Return key metrics (price, momentum, RSI, moving averages, volatility, quant score, signal) and the latest AI report for one stock symbol.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 15,
+              "description": "Ticker symbol, e.g. AAPL or VOLV-B.ST."
+            }
+          },
+          "required": [
+            "symbol"
+          ],
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_watchlists_and_alerts",
+        "title": "Get watchlists and price alerts",
+        "description": "Return the signed-in user's saved stock watchlists and price alerts (read-only).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": null
       }
     ]
   }
