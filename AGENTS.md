@@ -19,3 +19,4 @@
 - Email-panel owner logic lives in src/lib/email-panel.server.ts with injectable deps — lets tests prove non-owners never reach privileged calls.
 - Manual orders carry a one-time `clientKey` claimed in `order_keys` before trading — blocks double-submits and replays.
 - XP comes only from server-written `player_achievements` (derived from real trade data) and `player_missions` (quiz answers checked server-side); clients have read-only access — players can't fake progress.
+- The MCP server lives in src/lib/mcp (one tool per file, OAuth-protected, RLS via caller token) — exposes read-only app data to external assistants without privileged keys.

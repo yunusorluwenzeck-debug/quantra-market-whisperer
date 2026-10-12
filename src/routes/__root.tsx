@@ -135,7 +135,7 @@ function RootComponent() {
         const next = sessionStorage.getItem("post-auth");
         if (next && next.startsWith("/") && !next.startsWith("//")) {
           sessionStorage.removeItem("post-auth");
-          void router.navigate({ to: next });
+          void router.navigate({ href: next });
         }
       }
     });
