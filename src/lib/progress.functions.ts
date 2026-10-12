@@ -41,11 +41,23 @@ export const getPeriodicMissions = createServerFn({ method: "POST" })
     const { periodicStatus, todaysQuiz, periodicCode } = await import("./progress.server");
     const { PERIODIC } = await import("./progress");
     const st = await periodicStatus(context.userId);
+    const { pushCompletedMissions } = await import("./push.server");
+    await pushCompletedMissions(context.userId).catch(() => {});
     const quiz = todaysQuiz(st.keys.day);
     return {
       quiz: { q: quiz.q, options: quiz.options },
       missions: PERIODIC.map((m) => ({ ...m, claimed: st.claimed.has(periodicCode(m.id, st.keys)), met: st.met[m.id] ?? false, progress: st.progressText[m.id] ?? null })),
     };
+  });
+
+/** Called after any activity that may complete a mission (e.g. setting a price alert). */
+export const notifyMissionActivity = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    if (!(await takeRateSlot(context.userId, "save_settings"))) return { ok: false };
+    const { pushCompletedMissions } = await import("./push.server");
+    await pushCompletedMissions(context.userId).catch(() => {});
+    return { ok: true };
   });
 
 export const claimPeriodicMission = createServerFn({ method: "POST" })
