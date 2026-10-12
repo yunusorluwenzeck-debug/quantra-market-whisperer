@@ -30,6 +30,8 @@ export const completeMission = createServerFn({ method: "POST" })
       .upsert({ user_id: context.userId, code: data.code, xp: r.xp }, { onConflict: "user_id,code", ignoreDuplicates: true });
     if (error) return { ok: false, error: "Kunde inte spara uppdraget" };
     await logEvent(context.userId, "mission_completed", { code: data.code });
+    const { pushToUser } = await import("./push.server");
+    await pushToUser(context.userId, "Uppdrag klart! 🎯", `Du har slutfört ett läromuppdrag och fått +${r.xp} XP.`).catch(() => 0);
     return { ok: true, error: null };
   });
 
@@ -39,11 +41,23 @@ export const getPeriodicMissions = createServerFn({ method: "POST" })
     const { periodicStatus, todaysQuiz, periodicCode } = await import("./progress.server");
     const { PERIODIC } = await import("./progress");
     const st = await periodicStatus(context.userId);
+    const { pushCompletedMissions } = await import("./push.server");
+    await pushCompletedMissions(context.userId).catch(() => {});
     const quiz = todaysQuiz(st.keys.day);
     return {
       quiz: { q: quiz.q, options: quiz.options },
       missions: PERIODIC.map((m) => ({ ...m, claimed: st.claimed.has(periodicCode(m.id, st.keys)), met: st.met[m.id] ?? false, progress: st.progressText[m.id] ?? null })),
     };
+  });
+
+/** Called after any activity that may complete a mission (e.g. setting a price alert). */
+export const notifyMissionActivity = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    if (!(await takeRateSlot(context.userId, "save_settings"))) return { ok: false };
+    const { pushCompletedMissions } = await import("./push.server");
+    await pushCompletedMissions(context.userId).catch(() => {});
+    return { ok: true };
   });
 
 export const claimPeriodicMission = createServerFn({ method: "POST" })
@@ -62,5 +76,7 @@ export const claimPeriodicMission = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("player_missions")
       .upsert({ user_id: context.userId, code: periodicCode(m.id, st.keys), xp: m.xp }, { onConflict: "user_id,code", ignoreDuplicates: true });
     if (error) return { ok: false, error: "Kunde inte spara" };
+    const { pushToUser } = await import("./push.server");
+    await pushToUser(context.userId, "Uppdrag klart! 🎯", `"${m.title}" är klart — du fick +${m.xp} XP.`).catch(() => 0);
     return { ok: true, error: null, xp: m.xp };
   });

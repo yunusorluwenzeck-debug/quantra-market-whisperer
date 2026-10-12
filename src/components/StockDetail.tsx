@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { getStock } from "@/lib/market.functions";
 import { placeOrder } from "@/lib/trading.functions";
+import { notifyMissionActivity } from "@/lib/progress.functions";
 import { trackSave } from "@/lib/save-status";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -163,7 +164,7 @@ function ListAndAlert({ symbol, price, currency }: { symbol: string; price: numb
     const t = Number(target);
     if (!(t > 0)) { toast.error("Ange ett målpris"); return; }
     const { error } = await supabase.from("price_alerts").insert({ symbol, direction: dir, target: t });
-    if (error) toast.error(error.message); else { toast.success(`Larm satt: ${symbol} ${dir} ${fmt(t)} ${currency}`); qc.invalidateQueries({ queryKey: ["alerts"] }); }
+    if (error) toast.error(error.message); else { toast.success(`Larm satt: ${symbol} ${dir} ${fmt(t)} ${currency}`); qc.invalidateQueries({ queryKey: ["alerts"] }); void notifyMissionActivity(); }
   }
   return (
     <section className="grid gap-4 rounded-lg border border-border bg-card p-4">
