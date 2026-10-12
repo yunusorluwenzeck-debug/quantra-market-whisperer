@@ -30,6 +30,8 @@ import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticat
 import { Route as ApiAnalyzeRouteImport } from './routes/api/analyze'
 import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AuthenticatedTutorialIndexRouteImport } from './routes/_authenticated/tutorial.index'
+import { Route as AuthenticatedTutorialChapterRouteImport } from './routes/_authenticated/tutorial.$chapter'
 import { Route as ApiPublicHooksAutotradeRouteImport } from './routes/api/public/hooks/autotrade'
 import { Route as ApiPublicHooksMissionPushRouteImport } from './routes/api/public/hooks/mission-push'
 import { Route as ApiPublicHooksScanRouteImport } from './routes/api/public/hooks/scan'
@@ -139,6 +141,18 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedTutorialIndexRoute =
+  AuthenticatedTutorialIndexRouteImport.update({
+    id: '/tutorial/',
+    path: '/tutorial/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTutorialChapterRoute =
+  AuthenticatedTutorialChapterRouteImport.update({
+    id: '/tutorial/$chapter',
+    path: '/tutorial/$chapter',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicHooksAutotradeRoute = ApiPublicHooksAutotradeRouteImport.update({
   id: '/api/public/hooks/autotrade',
   path: '/api/public/hooks/autotrade',
@@ -177,6 +191,8 @@ export interface FileRoutesByFullPath {
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/tutorial/$chapter': typeof AuthenticatedTutorialChapterRoute
+  '/tutorial/': typeof AuthenticatedTutorialIndexRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
   '/api/public/hooks/mission-push': typeof ApiPublicHooksMissionPushRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
@@ -202,6 +218,8 @@ export interface FileRoutesByTo {
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/tutorial/$chapter': typeof AuthenticatedTutorialChapterRoute
+  '/tutorial': typeof AuthenticatedTutorialIndexRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
   '/api/public/hooks/mission-push': typeof ApiPublicHooksMissionPushRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
@@ -229,6 +247,8 @@ export interface FileRoutesById {
   '/api/analyze': typeof ApiAnalyzeRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/_authenticated/tutorial/$chapter': typeof AuthenticatedTutorialChapterRoute
+  '/_authenticated/tutorial/': typeof AuthenticatedTutorialIndexRoute
   '/api/public/hooks/autotrade': typeof ApiPublicHooksAutotradeRoute
   '/api/public/hooks/mission-push': typeof ApiPublicHooksMissionPushRoute
   '/api/public/hooks/scan': typeof ApiPublicHooksScanRoute
@@ -256,6 +276,8 @@ export interface FileRouteTypes {
     | '/api/analyze'
     | '/stock/$symbol'
     | '/.lovable/oauth/consent'
+    | '/tutorial/$chapter'
+    | '/tutorial/'
     | '/api/public/hooks/autotrade'
     | '/api/public/hooks/mission-push'
     | '/api/public/hooks/scan'
@@ -281,6 +303,8 @@ export interface FileRouteTypes {
     | '/api/analyze'
     | '/stock/$symbol'
     | '/.lovable/oauth/consent'
+    | '/tutorial/$chapter'
+    | '/tutorial'
     | '/api/public/hooks/autotrade'
     | '/api/public/hooks/mission-push'
     | '/api/public/hooks/scan'
@@ -307,6 +331,8 @@ export interface FileRouteTypes {
     | '/api/analyze'
     | '/stock/$symbol'
     | '/.lovable/oauth/consent'
+    | '/_authenticated/tutorial/$chapter'
+    | '/_authenticated/tutorial/'
     | '/api/public/hooks/autotrade'
     | '/api/public/hooks/mission-push'
     | '/api/public/hooks/scan'
@@ -480,6 +506,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/tutorial/': {
+      id: '/_authenticated/tutorial/'
+      path: '/tutorial'
+      fullPath: '/tutorial/'
+      preLoaderRoute: typeof AuthenticatedTutorialIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tutorial/$chapter': {
+      id: '/_authenticated/tutorial/$chapter'
+      path: '/tutorial/$chapter'
+      fullPath: '/tutorial/$chapter'
+      preLoaderRoute: typeof AuthenticatedTutorialChapterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/hooks/autotrade': {
       id: '/api/public/hooks/autotrade'
       path: '/api/public/hooks/autotrade'
@@ -513,6 +553,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortfolioRoute: typeof AuthenticatedPortfolioRoute
   AuthenticatedProgressRoute: typeof AuthenticatedProgressRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
+  AuthenticatedTutorialChapterRoute: typeof AuthenticatedTutorialChapterRoute
+  AuthenticatedTutorialIndexRoute: typeof AuthenticatedTutorialIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -524,6 +566,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortfolioRoute: AuthenticatedPortfolioRoute,
   AuthenticatedProgressRoute: AuthenticatedProgressRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
+  AuthenticatedTutorialChapterRoute: AuthenticatedTutorialChapterRoute,
+  AuthenticatedTutorialIndexRoute: AuthenticatedTutorialIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

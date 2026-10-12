@@ -5,13 +5,15 @@ import { setSekRate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { Home, LineChart, PieChart, Wallet, GraduationCap, Target, Trophy, Bot, History, ListChecks, Bell, Shield, Menu, X } from "lucide-react";
+import { Home, LineChart, PieChart, Wallet, GraduationCap, Target, Trophy, Bot, History, ListChecks, Bell, Shield, Menu, X, BookOpen, Swords } from "lucide-react";
 import { SaveBadge } from "@/components/SaveBadge";
 import { MfaGate } from "@/components/Mfa";
 import { MissionNotifier, useClaimableMissions } from "@/components/MissionNotifier";
 
 const NAV = [
   { to: "/", label: "Hem", icon: Home },
+  { to: "/tutorial", label: "Handledning", icon: BookOpen },
+  { to: "/challenge", label: "Börsutmaningen", icon: Swords },
   { to: "/screener", label: "Marknaden", icon: LineChart },
   { to: "/fonder", label: "Fonder", icon: PieChart },
   { to: "/portfolio", label: "Portfölj", icon: Wallet },
@@ -24,7 +26,7 @@ const NAV = [
   { to: "/alerts", label: "Larm", icon: Bell },
   { to: "/security", label: "Profil & säkerhet", icon: Shield },
 ] as const;
-const MOBILE = NAV.slice(0, 4);
+const MOBILE = [NAV[0], NAV[1], NAV[2], NAV[5]] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -111,7 +113,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur lg:hidden" onClick={() => setMore(false)}>
           <div className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-border bg-secondary p-4 pb-8" onClick={(e) => e.stopPropagation()}>
             <div className="mb-2 flex items-center justify-between"><span className="font-semibold">Meny</span><button aria-label="Stäng" onClick={() => setMore(false)}><X className="h-5 w-5" /></button></div>
-            <nav className="grid grid-cols-2 gap-1">{NAV.slice(4).map((n) => navLink(n, () => setMore(false)))}</nav>
+            <nav className="grid grid-cols-2 gap-1">{NAV.filter((n) => !MOBILE.some((m) => m.to === n.to)).map((n) => navLink(n, () => setMore(false)))}</nav>
             {user && <button onClick={() => { setMore(false); supabase.auth.signOut(); }} className="mt-3 w-full rounded-lg border border-border py-2 text-sm text-muted-foreground">Logga ut</button>}
           </div>
         </div>
