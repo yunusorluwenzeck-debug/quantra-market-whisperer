@@ -56,6 +56,8 @@ export const passwordSignIn = createServerFn({ method: "POST" })
       }
       return { session: null, error: error?.message ?? "Inloggningen misslyckades" };
     }
+    // Correct password, but the account is locked: refuse the session without revealing why it was checked.
+    if (await g.lockedUntil(hash)) return { session: null, error: LOCKED };
     return { session: { access_token: res.session.access_token, refresh_token: res.session.refresh_token }, error: null };
   });
 
