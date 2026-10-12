@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 /** Reusable game UI building blocks (cards, XP bars, stats, badges). */
 
-export function GameCard({ children, className, glow }: { children: ReactNode; className?: string; glow?: "primary" | "gold" }) {
+export function GameCard({ children, className, glow }: { children: ReactNode; className?: string | undefined; glow?: "primary" | "gold" | undefined }) {
   return (
     <section className={cn(
       "relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg",
@@ -18,7 +18,7 @@ export function CardLabel({ children, icon }: { children: ReactNode; icon?: Reac
   return <div className="mb-2 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{icon}{children}</div>;
 }
 
-export function XpBar({ value, max, className, tone = "primary" }: { value: number; max: number; className?: string; tone?: "primary" | "gold" }) {
+export function XpBar({ value, max, className, tone = "primary" }: { value: number; max: number; className?: string | undefined; tone?: "primary" | "gold" }) {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   return (
     <div className={cn("h-3 overflow-hidden rounded-full bg-muted", className)} role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>
